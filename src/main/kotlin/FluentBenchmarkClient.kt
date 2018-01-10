@@ -14,11 +14,30 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = arrayOf("-V", "--version"), versionHelp = true, description = ["display version info"])
     private var versionInfoRequested: Boolean = false
 
-    @Option(names = ["-H", "--host"], paramLabel = "HOST", description = ["The IP address or host name of the server"])
+    @Option(names = ["-H", "--host"], paramLabel = "HOST",
+            description = ["The IP address or host name of the server", "(default: localhost)"])
     private var host: String = "localhost"
 
-    @Option(names = ["-P", "--port"], paramLabel = "PORT", description = ["The port number of the host"])
+    @Option(names = ["-P", "--port"], paramLabel = "PORT",
+            description = ["The port number of the host", "(default: 24224)"])
     private var port: Int = 24224
+
+    // TODO Use authentication related options
+    @Option(names = ["--shared-key"], paramLabel = "SHAREDKEY", description = ["The shared key"])
+    private var sharedKey: String? = null
+
+    @Option(names = ["--username"], paramLabel = "USERNAME", description = ["The username for authentication"])
+    private var username: String? = null
+
+    @Option(names = ["--password"], paramLabel = "PASSWORD", description = ["The password for authentication"])
+    private var password: String? = null
+
+    @Option(names = ["--require-ack-response"], description = ["Change the protocol to at-least-once (default: false)"])
+    private var requireAckResponse: Boolean = false
+
+    @Option(names = ["--ack-response-timeout"], paramLabel = "TIMEOUT",
+            description = ["This option is used when require_ack_response is true"])
+    private var ackResponseTimeout: Int? = null
 
     override fun run() {
         var conf: Fluency.Config = Fluency.Config()
