@@ -65,6 +65,15 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
 
+    enum class TimestampType {
+        EventTime,
+        Integer
+    }
+
+    @Option(names = ["--timestamp-type"], paramLabel = "TYPE",
+            description = ["Timestamp type for each event: EventTime, Integer"])
+    private var timestampType: TimestampType = TimestampType.EventTime
+
     // Report options
     @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",
             description = [
@@ -89,7 +98,7 @@ class FluentBenchmarkClient: Runnable {
 
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
         println("Run!")
-        var client = BenchmarkClient(fluency, tag)
+        var client = BenchmarkClient(fluency, tag, timestampType)
         try {
             client.run()
         } catch (ex: InterruptedException) {
