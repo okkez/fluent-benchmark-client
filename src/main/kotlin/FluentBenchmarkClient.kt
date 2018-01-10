@@ -26,6 +26,7 @@ class FluentBenchmarkClient: Runnable {
         println("Run!")
         var client: BenchmarkClient = BenchmarkClient(fluency)
         client.run()
+        fluency.close()
     }
 
     companion object {
