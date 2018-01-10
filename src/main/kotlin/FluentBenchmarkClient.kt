@@ -35,9 +35,6 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--require-ack-response"], description = ["Change the protocol to at-least-once (default: false)"])
     private var requireAckResponse: Boolean = false
 
-    @Option(names = ["--ack-response-timeout"], paramLabel = "TIMEOUT",
-            description = ["This option is used when require_ack_response is true"])
-    private var ackResponseTimeout: Int? = null
 
     // Load options
     @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events"])
