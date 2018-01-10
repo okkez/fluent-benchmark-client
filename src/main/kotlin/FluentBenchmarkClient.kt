@@ -39,6 +39,25 @@ class FluentBenchmarkClient: Runnable {
             description = ["This option is used when require_ack_response is true"])
     private var ackResponseTimeout: Int? = null
 
+    // Load options
+    @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events"])
+    private var nEvents: Int = 10000
+
+    @Option(names = ["--flood"], paramLabel = "PERIOD",
+            description = [
+                "Flood of events are emitted for PEDIOD seconds/minutes/hours",
+                "Endless if PERIOD is not specified"
+            ])
+    private var flood: Int? = null
+
+    // Report options
+    @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",
+            description = [
+                "Report statistics at intervals of INTERVAL seconds/minutes/hours",
+                "If INTERVAL isn't specified, report each 1 second"
+            ])
+    private var reportPeriodically: String? = null
+
     override fun run() {
         var conf: Fluency.Config = Fluency.Config()
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
