@@ -59,7 +59,7 @@ class FluentBenchmarkClient: Runnable {
         var conf: Fluency.Config = Fluency.Config()
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
         println("Run!")
-        var client: BenchmarkClient = BenchmarkClient(fluency)
+        var client = BenchmarkClient(fluency)
         client.run()
         fluency.close()
     }
