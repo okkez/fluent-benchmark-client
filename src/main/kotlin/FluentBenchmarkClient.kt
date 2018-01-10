@@ -86,8 +86,13 @@ class FluentBenchmarkClient: Runnable {
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
         println("Run!")
         var client = BenchmarkClient(fluency, tag)
-        client.run()
-        fluency.close()
+        try {
+            client.run()
+        } catch (ex: InterruptedException) {
+            // Do nothing for now
+        } finally {
+            fluency.close()
+        }
     }
 
     companion object {
