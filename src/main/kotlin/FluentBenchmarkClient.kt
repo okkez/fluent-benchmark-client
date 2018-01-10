@@ -34,7 +34,11 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--password"], paramLabel = "PASSWORD", description = ["The password for authentication"])
     private var password: String? = null
 
-    @Option(names = ["--require-ack-response"], description = ["Change the protocol to at-least-once (default: false)"])
+    @Option(names = ["--require-ack-response"],
+            description = [
+                "Change the protocol to at-least-once",
+                "(default: false)"
+            ])
     private var requireAckResponse: Boolean = false
 
     // Buffer options
