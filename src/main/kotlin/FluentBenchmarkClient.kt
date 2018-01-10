@@ -57,6 +57,7 @@ class FluentBenchmarkClient: Runnable {
 
     override fun run() {
         var conf: Fluency.Config = Fluency.Config()
+        conf.isAckResponseMode = requireAckResponse
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
         println("Run!")
         var client = BenchmarkClient(fluency)
