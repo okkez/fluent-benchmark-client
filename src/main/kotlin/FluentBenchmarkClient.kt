@@ -58,6 +58,9 @@ class FluentBenchmarkClient: Runnable {
             ])
     private var flood: Int? = null
 
+    @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
+    private var tag: String = "benchmark.data"
+
     // Report options
     @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",
             description = [
@@ -82,7 +85,7 @@ class FluentBenchmarkClient: Runnable {
 
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
         println("Run!")
-        var client = BenchmarkClient(fluency)
+        var client = BenchmarkClient(fluency, tag)
         client.run()
         fluency.close()
     }

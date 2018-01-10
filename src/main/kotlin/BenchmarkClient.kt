@@ -2,9 +2,11 @@ package org.fluentd
 
 import org.komamitsu.fluency.Fluency
 
-class BenchmarkClient(private val fluency: Fluency) {
+class BenchmarkClient(private val fluency: Fluency, private val tag: String) {
 
     fun run() {
-        fluency.emit("dummy.log", mapOf("message" to "Hello Kotlin!!"))
+        while (true) {
+            fluency.emit(tag, mapOf("message" to "Hello Kotlin!!"))
+        }
     }
 }
