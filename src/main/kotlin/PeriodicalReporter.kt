@@ -17,7 +17,8 @@ class PeriodicalReporter(private val statistics: Statistics, private val interva
             }
             var now = System.currentTimeMillis()
             if (now - lastChecked >= interval) {
-                log.info("{}", statistics.nEvents())
+                log.info("count={} total={} avg={}",
+                        statistics.nEvents(), statistics.nTotalEvents(), statistics.average())
                 lastChecked = now
             }
         }
