@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
-import sizeToInt
-import sizeToLong
 
 @Command(name = "FluentdBenchmarkClient", version = ["1.0.0"], description = ["Benchmark client for Fluentd"])
 class FluentBenchmarkClient: Runnable {
