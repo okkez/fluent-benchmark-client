@@ -1,6 +1,7 @@
 package org.fluentd
 
 import org.komamitsu.fluency.Fluency
+import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
@@ -60,7 +61,7 @@ class FluentBenchmarkClient: Runnable {
                 "Flood of events are emitted for PEDIOD seconds/minutes/hours",
                 "Endless if PERIOD is not specified"
             ])
-    private var flood: Int? = null
+    private var flood: String? = null
 
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
@@ -97,7 +98,7 @@ class FluentBenchmarkClient: Runnable {
         }
 
         var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
-        println("Run!")
+        log.info("Run benchmark!")
         var client = BenchmarkClient(fluency, tag, timestampType)
         try {
             client.run()
@@ -105,10 +106,13 @@ class FluentBenchmarkClient: Runnable {
             // Do nothing for now
         } finally {
             fluency.close()
+            val reporter = StatisticsReporter(client.statistics)
+            reporter.report()
         }
     }
 
     companion object {
+        val log = LoggerFactory.getLogger(this::class.java.enclosingClass)!!
         @JvmStatic fun main(args: Array<String>) {
             CommandLine.run(FluentBenchmarkClient(), System.err, *args)
         }
