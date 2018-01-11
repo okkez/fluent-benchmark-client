@@ -1,3 +1,5 @@
+package org.fluentd.benchmark
+
 fun sizeToLong(size: String): Long {
     val pattern = Regex("""\A(\d+)([kKmMgG])\z""")
     val m = pattern.matchEntire(size)

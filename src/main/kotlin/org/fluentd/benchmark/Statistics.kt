@@ -1,4 +1,4 @@
-package org.fluentd
+package org.fluentd.benchmark
 
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicLong

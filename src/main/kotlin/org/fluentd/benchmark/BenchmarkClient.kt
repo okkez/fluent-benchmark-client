@@ -1,4 +1,4 @@
-package org.fluentd
+package org.fluentd.benchmark
 
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency

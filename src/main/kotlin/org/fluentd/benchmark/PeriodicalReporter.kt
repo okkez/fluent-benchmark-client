@@ -1,4 +1,4 @@
-package org.fluentd
+package org.fluentd.benchmark
 
 import org.slf4j.LoggerFactory
 
