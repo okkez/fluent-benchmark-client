@@ -1,23 +1,30 @@
 package org.fluentd.benchmark
 
+import kotlinx.coroutines.experimental.*
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
-import kotlin.concurrent.thread
 
-class BenchmarkClient(private val fluency: Fluency,
+class BenchmarkClient(host: String,
+                      port: Int,
+                      fluencyConfig: Fluency.Config,
                       private val tag: String,
-                      private val timestampType: FluentBenchmarkClient.TimestampType) {
+                      private val timestampType: FluentBenchmarkClient.TimestampType,
+                      private val floodPeriod: Int) {
 
-    lateinit var statistics: Statistics
+    private val fluency = Fluency.defaultFluency(host, port, fluencyConfig)
+    private lateinit var mainJob: Job
 
-    fun run() {
-        statistics = Statistics()
-        val reporter = PeriodicalReporter(statistics)
-        thread { reporter.run() }
-        while (true) {
-            emitEvent(mapOf("message" to "Hello Kotlin!!"))
-            statistics.add(1)
+    fun run() = runBlocking {
+        mainJob = launch {
+            while (isActive) {
+                emitEvent(mapOf("message" to "Hello Kotlin!!"))
+            }
+            println("Complete!")
         }
+        delay(floodPeriod * 1000L)
+        mainJob.cancel()
+        mainJob.join()
+        fluency.close()
     }
 
     fun emitEvent(data: Map<String, Any>) {
@@ -30,5 +37,9 @@ class BenchmarkClient(private val fluency: Fluency,
             }
         }
 
+    }
+
+    fun stop() {
+        // mainJob.cancel()
     }
 }

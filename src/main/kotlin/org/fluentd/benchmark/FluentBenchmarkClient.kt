@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
+import kotlin.system.exitProcess
 
 @Command(name = "FluentdBenchmarkClient", version = ["1.0.0"], description = ["Benchmark client for Fluentd"])
 class FluentBenchmarkClient: Runnable {
@@ -82,7 +83,7 @@ class FluentBenchmarkClient: Runnable {
     private var reportPeriodically: String? = null
 
     override fun run() {
-        var conf: Fluency.Config = Fluency.Config()
+        val conf: Fluency.Config = Fluency.Config()
         conf.isAckResponseMode = requireAckResponse
 
         if (!bufferChunkInitialSize.isNullOrEmpty()) {
@@ -95,17 +96,33 @@ class FluentBenchmarkClient: Runnable {
             conf.maxBufferSize = sizeToLong(maxBufferSize!!)
         }
 
-        var fluency: Fluency = Fluency.defaultFluency(host, port, conf)
+
+        val floodPeriod = if (!flood.isNullOrEmpty()) {
+            timeToInt(flood!!)
+        } else {
+            0
+        }
+
+        println(floodPeriod)
+
         log.info("Run benchmark!")
-        var client = BenchmarkClient(fluency, tag, timestampType)
+        val client = BenchmarkClient(
+                host = host,
+                port = port,
+                fluencyConfig = conf,
+                tag = tag,
+                timestampType = timestampType,
+                floodPeriod = floodPeriod)
         try {
             client.run()
-        } catch (ex: InterruptedException) {
-            // Do nothing for now
         } finally {
-            fluency.close()
-            val reporter = StatisticsReporter(client.statistics)
-            reporter.report()
+            println("finaly !!!!!")
+            client.stop()
+            println("stopped !!!!!")
+            // exitProcess(0)
+            //client.statistics.finish()
+            //val reporter = StatisticsReporter(client.statistics)
+            //reporter.report()
         }
     }
 

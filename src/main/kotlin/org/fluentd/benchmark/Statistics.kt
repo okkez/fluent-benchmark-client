@@ -31,12 +31,17 @@ class Statistics(val start: Instant = Instant.now()) {
         return totalCounter.get()
     }
 
+    fun totalElapsedTime(): Float {
+        finish ?: finish()
+        return (finish!!.toEpochMilli() - start.toEpochMilli()).toFloat() / 1000
+    }
+
     fun average(elapsed: Long = Instant.now().epochSecond - start.epochSecond): Float {
         return nTotalEvents() / elapsed.toFloat()
     }
 
     fun finish() {
-        finish = Instant.now()
+        finish = finish ?: Instant.now()
     }
 
     fun format(): String {
