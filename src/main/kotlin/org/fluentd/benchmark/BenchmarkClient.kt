@@ -1,6 +1,7 @@
 package org.fluentd.benchmark
 
 import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.channels.SendChannel
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 
@@ -13,18 +14,24 @@ class BenchmarkClient(host: String,
 
     private val fluency = Fluency.defaultFluency(host, port, fluencyConfig)
     private lateinit var mainJob: Job
+    private lateinit var statistics: SendChannel<Statistics.Recorder>
 
     fun run() = runBlocking {
+        statistics = createStatistics()
+        val reporter = PeriodicalReporter(statistics)
         mainJob = launch {
             while (isActive) {
                 emitEvent(mapOf("message" to "Hello Kotlin!!"))
+                statistics.send(Statistics.Recorder.Update)
             }
-            println("Complete!")
+            statistics.send(Statistics.Recorder.Finish)
+            fluency.close()
         }
+        reporter.run()
         delay(floodPeriod * 1000L)
         mainJob.cancel()
+        reporter.stop()
         mainJob.join()
-        fluency.close()
     }
 
     fun emitEvent(data: Map<String, Any>) {
@@ -36,10 +43,22 @@ class BenchmarkClient(host: String,
                 fluency.emit(tag, data)
             }
         }
-
     }
 
     fun stop() {
-        // mainJob.cancel()
+        if (mainJob.isActive) {
+            mainJob.cancel()
+        }
+        if (!fluency.isTerminated) {
+            fluency.close()
+        }
+    }
+
+    suspend fun report() {
+        val response = CompletableDeferred<Statistics>()
+        statistics.send(Statistics.Recorder.Get(response))
+        val s = response.await()
+        val reporter = StatisticsReporter(s)
+        reporter.report()
     }
 }

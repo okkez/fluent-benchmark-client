@@ -1,5 +1,6 @@
 package org.fluentd.benchmark
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.komamitsu.fluency.Fluency
 import org.slf4j.LoggerFactory
 import picocli.CommandLine
@@ -81,7 +82,7 @@ class FluentBenchmarkClient: Runnable {
             ])
     private var reportPeriodically: String? = null
 
-    override fun run() {
+    override fun run() = runBlocking {
         val conf: Fluency.Config = Fluency.Config()
         conf.isAckResponseMode = requireAckResponse
 
@@ -115,13 +116,8 @@ class FluentBenchmarkClient: Runnable {
         try {
             client.run()
         } finally {
-            println("finaly !!!!!")
             client.stop()
-            println("stopped !!!!!")
-            // exitProcess(0)
-            //client.statistics.finish()
-            //val reporter = StatisticsReporter(client.statistics)
-            //reporter.report()
+            client.report()
         }
     }
 
