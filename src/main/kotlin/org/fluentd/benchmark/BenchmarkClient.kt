@@ -34,7 +34,7 @@ class BenchmarkClient(host: String,
         mainJob.join()
     }
 
-    fun emitEvent(data: Map<String, Any>) {
+    private fun emitEvent(data: Map<String, Any>) {
         when (timestampType) {
             FluentBenchmarkClient.TimestampType.EventTime -> {
                 fluency.emit(tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
