@@ -57,10 +57,9 @@ class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["--flood"], paramLabel = "PERIOD",
             description = [
-                "Flood of events are emitted for PEDIOD seconds/minutes/hours",
-                "Endless if PERIOD is not specified"
+                "Flood of events are emitted for PEDIOD seconds/minutes/hours"
             ])
-    private var flood: String? = null
+    private var flood: String = "10s"
 
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
