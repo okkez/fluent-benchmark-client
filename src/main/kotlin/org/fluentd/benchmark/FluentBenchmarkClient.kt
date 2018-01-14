@@ -44,17 +44,17 @@ class FluentBenchmarkClient: Runnable {
     // Buffer options
     @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
-            description = [""])
+            description = ["Initial chunk buffer size (1MB)"])
     private var bufferChunkInitialSize: String? = null
 
     @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
-            description = [""])
+            description = ["Threshold chunk buffer size to flush (4MB)"])
     private var bufferChunkRetentionSize: String? = null
 
     @Option(names = ["--max-buffer-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
-            description = ["The max buffer size"])
+            description = ["The max buffer size (16MB)"])
     private var maxBufferSize: String? = null
 
     // Load options
