@@ -57,6 +57,18 @@ class FluentBenchmarkClient: Runnable {
             description = ["The max buffer size (16MB)"])
     private var maxBufferSize: String? = null
 
+    @Option(names = ["--wait-until-buffer-flushed"], paramLabel = "SECONDS",
+            description = ["Max wait SECONDS until all buffers are flushed"])
+    private var waitUntilBufferFlushed: Int? = null
+
+    @Option(names = ["--wait-until-flusher-terminated"], paramLabel = "SECONDS",
+            description = ["Max wait SECONDS until the flusher is terminated"])
+    private var waitUntilFlusherTerminated: Int? = null
+
+    @Option(names = ["--flush-interval"], paramLabel = "MILLISECONDS",
+            description = ["Flush interval in milli seconds"])
+    private var flushInterval: Int? = null
+
     // Load options
     @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events (1000)"])
     private var nEvents: Int = 1000
@@ -144,6 +156,15 @@ class FluentBenchmarkClient: Runnable {
         }
         if (!maxBufferSize.isNullOrEmpty()) {
             conf.maxBufferSize = sizeToLong(maxBufferSize!!)
+        }
+        if (waitUntilBufferFlushed != null && waitUntilBufferFlushed!! > 0) {
+            conf.waitUntilBufferFlushed = waitUntilBufferFlushed
+        }
+        if (waitUntilFlusherTerminated != null && waitUntilFlusherTerminated!! > 0) {
+            conf.waitUntilFlusherTerminated = waitUntilFlusherTerminated
+        }
+        if (flushInterval != null && flushInterval!! > 0) {
+            conf.flushIntervalMillis = flushInterval
         }
 
         return conf
