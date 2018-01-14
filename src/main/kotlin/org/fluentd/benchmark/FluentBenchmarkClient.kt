@@ -58,7 +58,7 @@ class FluentBenchmarkClient: Runnable {
     private var maxBufferSize: String? = null
 
     // Load options
-    @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events"])
+    @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events (1000)"])
     private var nEvents: Int = 1000
 
     @Option(names = ["--interval"], paramLabel = "INTERVAL",
