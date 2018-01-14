@@ -102,18 +102,7 @@ class FluentBenchmarkClient: Runnable {
     private var reportInterval: Int = 1
 
     override fun run() = runBlocking {
-        val conf: Fluency.Config = Fluency.Config()
-        conf.isAckResponseMode = requireAckResponse
-
-        if (!bufferChunkInitialSize.isNullOrEmpty()) {
-            conf.bufferChunkInitialSize = sizeToInt(bufferChunkInitialSize!!)
-        }
-        if (!bufferChunkRetentionSize.isNullOrEmpty()) {
-            conf.bufferChunkRetentionSize = sizeToInt(bufferChunkRetentionSize!!)
-        }
-        if (!maxBufferSize.isNullOrEmpty()) {
-            conf.maxBufferSize = sizeToLong(maxBufferSize!!)
-        }
+        val conf = buildFluencyConfig()
 
         val mode = when {
             fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
@@ -140,6 +129,23 @@ class FluentBenchmarkClient: Runnable {
             client.stop()
             client.report()
         }
+    }
+
+    private fun buildFluencyConfig(): Fluency.Config {
+        val conf: Fluency.Config = Fluency.Config()
+        conf.isAckResponseMode = requireAckResponse
+
+        if (!bufferChunkInitialSize.isNullOrEmpty()) {
+            conf.bufferChunkInitialSize = sizeToInt(bufferChunkInitialSize!!)
+        }
+        if (!bufferChunkRetentionSize.isNullOrEmpty()) {
+            conf.bufferChunkRetentionSize = sizeToInt(bufferChunkRetentionSize!!)
+        }
+        if (!maxBufferSize.isNullOrEmpty()) {
+            conf.maxBufferSize = sizeToLong(maxBufferSize!!)
+        }
+
+        return conf
     }
 
     companion object {
