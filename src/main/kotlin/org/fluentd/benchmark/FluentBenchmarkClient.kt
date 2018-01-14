@@ -121,7 +121,8 @@ class FluentBenchmarkClient: Runnable {
                 nEvents = nEvents,
                 interval = fixedInterval,
                 period = fixedPeriod,
-                mode = mode
+                mode = mode,
+                reportInterval = reportInterval
         )
         try {
             client.run()

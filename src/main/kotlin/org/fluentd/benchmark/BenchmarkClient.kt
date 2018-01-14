@@ -13,7 +13,8 @@ class BenchmarkClient(host: String,
                       private val nEvents: Int,
                       private val interval: Int?,
                       private val period: Int?,
-                      private val mode: Mode) {
+                      private val mode: Mode,
+                      private val reportInterval: Int) {
 
     enum class Mode {
         FIXED_INTERVAL,
@@ -27,7 +28,7 @@ class BenchmarkClient(host: String,
 
     fun run() = runBlocking {
         statistics = createStatistics()
-        val reporter = PeriodicalReporter(statistics)
+        val reporter = PeriodicalReporter(statistics, reportInterval * 1000)
         mainJob = when(mode) {
             Mode.FIXED_INTERVAL -> {
                 when {
