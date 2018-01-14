@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
-import kotlin.system.exitProcess
 
 @Command(name = "FluentdBenchmarkClient", version = ["1.0.0"], description = ["Benchmark client for Fluentd"])
 class FluentBenchmarkClient: Runnable {
@@ -43,24 +42,43 @@ class FluentBenchmarkClient: Runnable {
     private var requireAckResponse: Boolean = false
 
     // Buffer options
-    @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE", description = [""])
+    @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE",
+            converter = [SizeTypeConverter::class],
+            description = [""])
     private var bufferChunkInitialSize: String? = null
 
-    @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE", description = [""])
+    @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE",
+            converter = [SizeTypeConverter::class],
+            description = [""])
     private var bufferChunkRetentionSize: String? = null
 
-    @Option(names = ["--max-buffer-size"], paramLabel = "SIZE", description = ["The max buffer size"])
+    @Option(names = ["--max-buffer-size"], paramLabel = "SIZE",
+            converter = [SizeTypeConverter::class],
+            description = ["The max buffer size"])
     private var maxBufferSize: String? = null
 
     // Load options
     @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events"])
-    private var nEvents: Int = 10000
+    private var nEvents: Int = 1000
+
+    @Option(names = ["--interval"], paramLabel = "INTERVAL",
+            converter = [TimeTypeConverter::class],
+            description = ["Emit events at intervals of INTERVAL seconds/minutes/hours"])
+    private var fixedInterval: Int? = null
+
+    @Option(names = ["--period"], paramLabel = "PERIOD",
+            converter = [TimeTypeConverter::class],
+            description = [
+                "Emit events on average in PERIOD seconds/minutes/hours"
+            ])
+    private var fixedPeriod: Int? = null
 
     @Option(names = ["--flood"], paramLabel = "PERIOD",
+            converter = [TimeTypeConverter::class],
             description = [
                 "Flood of events are emitted for PEDIOD seconds/minutes/hours"
             ])
-    private var flood: String = "10s"
+    private var flood: Int? = null
 
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
@@ -76,11 +94,12 @@ class FluentBenchmarkClient: Runnable {
 
     // Report options
     @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",
+            converter = [TimeTypeConverter::class],
             description = [
                 "Report statistics at intervals of INTERVAL seconds/minutes/hours",
                 "If INTERVAL isn't specified, report each 1 second"
             ])
-    private var reportPeriodically: String? = null
+    private var reportInterval: Int = 1
 
     override fun run() = runBlocking {
         val conf: Fluency.Config = Fluency.Config()
@@ -96,14 +115,12 @@ class FluentBenchmarkClient: Runnable {
             conf.maxBufferSize = sizeToLong(maxBufferSize!!)
         }
 
-
-        val floodPeriod = if (!flood.isNullOrEmpty()) {
-            timeToInt(flood!!)
-        } else {
-            0
+        val mode = when {
+            fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
+            fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
+            flood != null -> BenchmarkClient.Mode.FLOOD
+            else -> BenchmarkClient.Mode.FLOOD
         }
-
-        println(floodPeriod)
 
         log.info("Run benchmark!")
         val client = BenchmarkClient(
@@ -112,7 +129,11 @@ class FluentBenchmarkClient: Runnable {
                 fluencyConfig = conf,
                 tag = tag,
                 timestampType = timestampType,
-                floodPeriod = floodPeriod)
+                nEvents = nEvents,
+                interval = fixedInterval,
+                period = fixedPeriod,
+                mode = mode
+        )
         try {
             client.run()
         } finally {
