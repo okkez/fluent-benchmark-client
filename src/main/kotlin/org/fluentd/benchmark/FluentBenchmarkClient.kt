@@ -75,20 +75,28 @@ class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["--interval"], paramLabel = "INTERVAL",
             converter = [TimeTypeConverter::class],
-            description = ["Emit events at intervals of INTERVAL seconds/minutes/hours"])
+            description = [
+                "Emit events at intervals of INTERVAL seconds/minutes/hours",
+                "e.g: 3s, 3m, 1h. Default is seconds.",
+                "conflict with --period"
+            ])
     private var fixedInterval: Int? = null
 
     @Option(names = ["--period"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
             description = [
-                "Emit events on average in PERIOD seconds/minutes/hours"
+                "Emit events on average in PERIOD seconds/minutes/hours",
+                "e.g: 3s, 3m, 1h. Default is seconds.",
+                "conflict with --interval"
             ])
     private var fixedPeriod: Int? = null
 
     @Option(names = ["--flood"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
             description = [
-                "Flood of events are emitted for PEDIOD seconds/minutes/hours"
+                "Flood of events are emitted for PEDIOD seconds/minutes/hours",
+                "e.g: 3s, 3m, 1h. Default is seconds.",
+                "conflict with --interval, --period"
             ])
     private var flood: Int? = null
 
