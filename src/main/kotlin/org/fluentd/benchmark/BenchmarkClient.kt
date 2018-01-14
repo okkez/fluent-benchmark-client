@@ -10,7 +10,16 @@ class BenchmarkClient(host: String,
                       fluencyConfig: Fluency.Config,
                       private val tag: String,
                       private val timestampType: FluentBenchmarkClient.TimestampType,
-                      private val floodPeriod: Int) {
+                      private val nEvents: Int,
+                      private val interval: Int?,
+                      private val period: Int?,
+                      private val mode: Mode) {
+
+    enum class Mode {
+        FIXED_INTERVAL,
+        FIXED_PERIOD,
+        FLOOD,
+    }
 
     private val fluency = Fluency.defaultFluency(host, port, fluencyConfig)
     private lateinit var mainJob: Job
@@ -19,7 +28,39 @@ class BenchmarkClient(host: String,
     fun run() = runBlocking {
         statistics = createStatistics()
         val reporter = PeriodicalReporter(statistics)
-        mainJob = launch {
+        mainJob = when(mode) {
+            Mode.FIXED_INTERVAL -> {
+                when {
+                    interval != null && interval > 0 -> emitEventsInInterval(interval)
+                    else -> emitEventsInInterval()
+                }
+            }
+            Mode.FIXED_PERIOD -> emitEventsInPeriod()
+            Mode.FLOOD -> emitEventsInFlood()
+        }
+        reporter.run()
+        if (period != null && period > 0) {
+            delay(period * 1000L)
+            mainJob.cancel()
+        }
+        mainJob.join()
+        reporter.stop()
+    }
+
+    private suspend fun emitEventsInInterval(interval: Int = 1): Job {
+        return launch {
+            repeat(nEvents) {
+                emitEvent(mapOf("messag" to "Hello Kotlin!!"))
+                statistics.send(Statistics.Recorder.Update)
+                delay(interval * 1000L)
+            }
+            statistics.send(Statistics.Recorder.Finish)
+            fluency.close()
+        }
+    }
+
+    private suspend fun emitEventsInFlood(): Job {
+        return launch {
             while (isActive) {
                 emitEvent(mapOf("message" to "Hello Kotlin!!"))
                 statistics.send(Statistics.Recorder.Update)
@@ -27,11 +68,13 @@ class BenchmarkClient(host: String,
             statistics.send(Statistics.Recorder.Finish)
             fluency.close()
         }
-        reporter.run()
-        delay(floodPeriod * 1000L)
-        mainJob.cancel()
-        reporter.stop()
-        mainJob.join()
+    }
+
+    private suspend fun emitEventsInPeriod(): Job {
+        return when {
+            period != null && period > 0 -> emitEventsInInterval(nEvents / period)
+            else -> emitEventsInInterval()
+        }
     }
 
     private fun emitEvent(data: Map<String, Any>) {
