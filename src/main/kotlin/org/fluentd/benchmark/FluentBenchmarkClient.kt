@@ -24,14 +24,14 @@ class FluentBenchmarkClient: Runnable {
             description = ["The port number of the host", "(default: 24224)"])
     private var port: Int = 24224
 
-    // TODO Use authentication related options
-    @Option(names = ["--shared-key"], paramLabel = "SHAREDKEY", description = ["The shared key"])
+    // TODO Support authentication related options when Fluency supports them
+    @Option(names = ["--shared-key"], paramLabel = "SHAREDKEY", hidden = true, description = ["The shared key"])
     private var sharedKey: String? = null
 
-    @Option(names = ["--username"], paramLabel = "USERNAME", description = ["The username for authentication"])
+    @Option(names = ["--username"], paramLabel = "USERNAME", hidden = true, description = ["The username for authentication"])
     private var username: String? = null
 
-    @Option(names = ["--password"], paramLabel = "PASSWORD", description = ["The password for authentication"])
+    @Option(names = ["--password"], paramLabel = "PASSWORD", hidden = true, description = ["The password for authentication"])
     private var password: String? = null
 
     @Option(names = ["--require-ack-response"],
