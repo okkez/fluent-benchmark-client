@@ -2,8 +2,8 @@ package org.fluentd.benchmark
 
 import picocli.CommandLine
 
-class SizeTypeConverter: CommandLine.ITypeConverter<Long> {
-    override fun convert(value: String?): Long {
+class SizeTypeConverter: CommandLine.ITypeConverter<Number> {
+    override fun convert(value: String?): Number {
         if (value.isNullOrEmpty()) {
             return 0
         }

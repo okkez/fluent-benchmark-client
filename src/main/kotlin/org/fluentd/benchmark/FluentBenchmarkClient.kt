@@ -45,12 +45,12 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Initial chunk buffer size (1MB)"])
-    private var bufferChunkInitialSize: Long? = null
+    private var bufferChunkInitialSize: Int? = null
 
     @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Threshold chunk buffer size to flush (4MB)"])
-    private var bufferChunkRetentionSize: Long? = null
+    private var bufferChunkRetentionSize: Int? = null
 
     @Option(names = ["--max-buffer-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
@@ -157,10 +157,10 @@ class FluentBenchmarkClient: Runnable {
         conf.isAckResponseMode = requireAckResponse
 
         if (bufferChunkInitialSize != null) {
-            conf.bufferChunkInitialSize = bufferChunkInitialSize!!.toInt()
+            conf.bufferChunkInitialSize = bufferChunkInitialSize
         }
         if (bufferChunkRetentionSize != null) {
-            conf.bufferChunkRetentionSize = bufferChunkRetentionSize!!.toInt()
+            conf.bufferChunkRetentionSize = bufferChunkRetentionSize
         }
         if (maxBufferSize != null) {
             conf.maxBufferSize = maxBufferSize
