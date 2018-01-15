@@ -117,7 +117,7 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
     private var helpRequested: Boolean = false
 
-    @Option(names = arrayOf("-V", "--version"), versionHelp = true, description = ["Display version info and exit"])
+    @Option(names = ["-V", "--version"], versionHelp = true, description = ["Display version info and exit"])
     private var versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
