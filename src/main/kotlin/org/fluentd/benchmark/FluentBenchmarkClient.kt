@@ -45,17 +45,17 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Initial chunk buffer size (1MB)"])
-    private var bufferChunkInitialSize: String? = null
+    private var bufferChunkInitialSize: Long? = null
 
     @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Threshold chunk buffer size to flush (4MB)"])
-    private var bufferChunkRetentionSize: String? = null
+    private var bufferChunkRetentionSize: Long? = null
 
     @Option(names = ["--max-buffer-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["The max buffer size (16MB)"])
-    private var maxBufferSize: String? = null
+    private var maxBufferSize: Long? = null
 
     @Option(names = ["--wait-until-buffer-flushed"], paramLabel = "SECONDS",
             description = ["Max wait SECONDS until all buffers are flushed"])
@@ -156,14 +156,14 @@ class FluentBenchmarkClient: Runnable {
         val conf: Fluency.Config = Fluency.Config()
         conf.isAckResponseMode = requireAckResponse
 
-        if (!bufferChunkInitialSize.isNullOrEmpty()) {
-            conf.bufferChunkInitialSize = sizeToInt(bufferChunkInitialSize!!)
+        if (bufferChunkInitialSize != null) {
+            conf.bufferChunkInitialSize = bufferChunkInitialSize!!.toInt()
         }
-        if (!bufferChunkRetentionSize.isNullOrEmpty()) {
-            conf.bufferChunkRetentionSize = sizeToInt(bufferChunkRetentionSize!!)
+        if (bufferChunkRetentionSize != null) {
+            conf.bufferChunkRetentionSize = bufferChunkRetentionSize!!.toInt()
         }
-        if (!maxBufferSize.isNullOrEmpty()) {
-            conf.maxBufferSize = sizeToLong(maxBufferSize!!)
+        if (maxBufferSize != null) {
+            conf.maxBufferSize = maxBufferSize
         }
         if (waitUntilBufferFlushed != null && waitUntilBufferFlushed!! > 0) {
             conf.waitUntilBufferFlushed = waitUntilBufferFlushed
