@@ -13,6 +13,8 @@ class BenchmarkClient(host: String,
                       private val nEvents: Int,
                       private val interval: Int?,
                       private val period: Int?,
+                      private val recordKey: String,
+                      private val recordValue: String,
                       private val mode: Mode,
                       private val reportInterval: Int) {
 
@@ -51,7 +53,7 @@ class BenchmarkClient(host: String,
     private suspend fun emitEventsInInterval(interval: Int = 1): Job {
         return launch {
             repeat(nEvents) {
-                emitEvent(mapOf("messag" to "Hello Kotlin!!"))
+                emitEvent(mapOf(recordKey to recordValue))
                 statistics.send(Statistics.Recorder.Update)
                 delay(interval * 1000L)
             }
@@ -63,7 +65,7 @@ class BenchmarkClient(host: String,
     private suspend fun emitEventsInFlood(): Job {
         return launch {
             while (isActive) {
-                emitEvent(mapOf("message" to "Hello Kotlin!!"))
+                emitEvent(mapOf(recordKey to recordValue))
                 statistics.send(Statistics.Recorder.Update)
             }
             statistics.send(Statistics.Recorder.Finish)

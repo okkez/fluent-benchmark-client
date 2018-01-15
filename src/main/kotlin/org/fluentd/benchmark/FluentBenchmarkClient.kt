@@ -159,6 +159,8 @@ class FluentBenchmarkClient: Runnable {
                 nEvents = nEvents,
                 interval = fixedInterval,
                 period = fixedPeriod,
+                recordKey = recordKey,
+                recordValue = recordValue,
                 mode = mode,
                 reportInterval = reportInterval
         )
