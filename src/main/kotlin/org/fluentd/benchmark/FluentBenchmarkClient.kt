@@ -93,6 +93,25 @@ class FluentBenchmarkClient: Runnable {
             ])
     private var flood: Int? = null
 
+    @Option(names = ["--record-key"], paramLabel = "KEY",
+            description = ["The KEY of record"])
+    private var recordKey: String = "message"
+
+    @Option(names = ["--record-value"], paramLabel = "MESSAGE",
+            description = ["The MESSAGE of record"])
+    private var recordValue: String = "Hello, Fluentd! This is a test message."
+
+    @Option(names = ["--input-file-format"], paramLabel = "FORMAT",
+            description = [
+                "Format of input file. ltsv/json/msgpack",
+                "This option must use with --input-file"
+            ])
+    private var inputFileFormat: String = "ltsv"
+
+    @Option(names = ["--input-file"], paramLabel = "PATH",
+            description = ["Input file path"])
+    private var inputFilePath: String? = null
+
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
 
