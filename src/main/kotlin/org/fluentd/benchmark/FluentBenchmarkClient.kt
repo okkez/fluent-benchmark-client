@@ -7,21 +7,18 @@ import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 
-@Command(name = "FluentdBenchmarkClient", version = ["1.0.0"], description = ["Benchmark client for Fluentd"])
+@Command(name = "fluent-benchmark-client", version = ["1.0.0"],
+        sortOptions = false, abbreviateSynopsis = true,
+        optionListHeading = "%nOptions:%n",
+        description = ["Benchmark client for Fluentd"])
 class FluentBenchmarkClient: Runnable {
 
-    @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
-    private var helpRequested: Boolean = false
-
-    @Option(names = arrayOf("-V", "--version"), versionHelp = true, description = ["display version info"])
-    private var versionInfoRequested: Boolean = false
-
     @Option(names = ["-H", "--host"], paramLabel = "HOST",
-            description = ["The IP address or host name of the server", "(default: localhost)"])
+            description = ["The IP address or host name of the server (localhost)"])
     private var host: String = "localhost"
 
     @Option(names = ["-P", "--port"], paramLabel = "PORT",
-            description = ["The port number of the host", "(default: 24224)"])
+            description = ["The port number of the host (24224)"])
     private var port: Int = 24224
 
     // TODO Support authentication related options when Fluency supports them
@@ -34,11 +31,7 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--password"], paramLabel = "PASSWORD", hidden = true, description = ["The password for authentication"])
     private var password: String? = null
 
-    @Option(names = ["--require-ack-response"],
-            description = [
-                "Change the protocol to at-least-once",
-                "(default: false)"
-            ])
+    @Option(names = ["--require-ack-response"], description = ["Change the protocol to at-least-once (false)"])
     private var requireAckResponse: Boolean = false
 
     // Buffer options
@@ -120,6 +113,12 @@ class FluentBenchmarkClient: Runnable {
                 "If INTERVAL isn't specified, report each 1 second"
             ])
     private var reportInterval: Int = 1
+
+    @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
+    private var helpRequested: Boolean = false
+
+    @Option(names = arrayOf("-V", "--version"), versionHelp = true, description = ["Display version info and exit"])
+    private var versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
         val conf = buildFluencyConfig()
