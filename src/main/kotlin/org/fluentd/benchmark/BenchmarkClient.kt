@@ -8,15 +8,7 @@ import org.komamitsu.fluency.Fluency
 class BenchmarkClient(host: String,
                       port: Int,
                       fluencyConfig: Fluency.Config,
-                      private val tag: String,
-                      private val timestampType: FluentBenchmarkClient.TimestampType,
-                      private val nEvents: Int,
-                      private val interval: Int?,
-                      private val period: Int?,
-                      private val recordKey: String,
-                      private val recordValue: String,
-                      private val mode: Mode,
-                      private val reportInterval: Int) {
+                      private val config: BenchmarkConfig) {
 
     enum class Mode {
         FIXED_INTERVAL,
@@ -30,11 +22,11 @@ class BenchmarkClient(host: String,
 
     fun run() = runBlocking {
         statistics = createStatistics()
-        val reporter = PeriodicalReporter(statistics, reportInterval * 1000)
-        mainJob = when(mode) {
+        val reporter = PeriodicalReporter(statistics, config.reportInterval * 1000)
+        mainJob = when(config.mode) {
             Mode.FIXED_INTERVAL -> {
                 when {
-                    interval != null && interval > 0 -> emitEventsInInterval(interval)
+                    config.interval != null && config.interval > 0 -> emitEventsInInterval(config.interval)
                     else -> emitEventsInInterval()
                 }
             }
@@ -42,8 +34,8 @@ class BenchmarkClient(host: String,
             Mode.FLOOD -> emitEventsInFlood()
         }
         reporter.run()
-        if (period != null && period > 0) {
-            delay(period * 1000L)
+        if (config.period != null && config.period > 0) {
+            delay(config.period * 1000L)
             mainJob.cancel()
         }
         mainJob.join()
@@ -52,8 +44,8 @@ class BenchmarkClient(host: String,
 
     private suspend fun emitEventsInInterval(interval: Int = 1): Job {
         return launch {
-            repeat(nEvents) {
-                emitEvent(mapOf(recordKey to recordValue))
+            repeat(config.nEvents) {
+                emitEvent(config.record())
                 statistics.send(Statistics.Recorder.Update)
                 delay(interval * 1000L)
             }
@@ -65,7 +57,7 @@ class BenchmarkClient(host: String,
     private suspend fun emitEventsInFlood(): Job {
         return launch {
             while (isActive) {
-                emitEvent(mapOf(recordKey to recordValue))
+                emitEvent(config.record())
                 statistics.send(Statistics.Recorder.Update)
             }
             statistics.send(Statistics.Recorder.Finish)
@@ -75,18 +67,18 @@ class BenchmarkClient(host: String,
 
     private suspend fun emitEventsInPeriod(): Job {
         return when {
-            period != null && period > 0 -> emitEventsInInterval(nEvents / period)
+            config.period != null && config.period > 0 -> emitEventsInInterval(config.nEvents / config.period)
             else -> emitEventsInInterval()
         }
     }
 
     private fun emitEvent(data: Map<String, Any>) {
-        when (timestampType) {
+        when (config.timestampType) {
             FluentBenchmarkClient.TimestampType.EventTime -> {
-                fluency.emit(tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
+                fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
             }
             FluentBenchmarkClient.TimestampType.Integer -> {
-                fluency.emit(tag, data)
+                fluency.emit(config.tag, data)
             }
         }
     }

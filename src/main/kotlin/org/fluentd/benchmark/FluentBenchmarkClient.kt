@@ -140,29 +140,33 @@ class FluentBenchmarkClient: Runnable {
     private var versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
-        val conf = buildFluencyConfig()
+        val fluencyConfig = buildFluencyConfig()
 
-        val mode = when {
+        val benchmarkMode = when {
             fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
             fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
             flood != null -> BenchmarkClient.Mode.FLOOD
             else -> BenchmarkClient.Mode.FLOOD
         }
 
+        val benchmarkConfig = BenchmarkConfig.create {
+            tag = tag
+            timestampType = timestampType
+            nEvents = nEvents
+            interval = fixedInterval
+            period = fixedPeriod
+            recordKey = recordKey
+            recordValue = recordValue
+            mode = benchmarkMode
+            reportInterval = reportInterval
+        }
+
         log.info("Run benchmark!")
         val client = BenchmarkClient(
                 host = host,
                 port = port,
-                fluencyConfig = conf,
-                tag = tag,
-                timestampType = timestampType,
-                nEvents = nEvents,
-                interval = fixedInterval,
-                period = fixedPeriod,
-                recordKey = recordKey,
-                recordValue = recordValue,
-                mode = mode,
-                reportInterval = reportInterval
+                fluencyConfig = fluencyConfig,
+                config = benchmarkConfig
         )
         try {
             client.run()
