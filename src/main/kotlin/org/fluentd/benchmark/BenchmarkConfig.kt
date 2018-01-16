@@ -1,5 +1,7 @@
 package org.fluentd.benchmark
 
+import java.nio.ByteBuffer
+
 class BenchmarkConfig(val tag: String,
                       val timestampType: BenchmarkClient.TimestampType,
                       val nEvents: Int,
@@ -7,6 +9,8 @@ class BenchmarkConfig(val tag: String,
                       val period: Int?,
                       val recordKey: String,
                       val recordValue: String,
+                      val inputFileFormat: BenchmarkClient.FileFormat,
+                      val inputFilePath: String?,
                       val mode: BenchmarkClient.Mode,
                       val reportInterval: Int) {
 
@@ -18,6 +22,8 @@ class BenchmarkConfig(val tag: String,
             builder.period,
             builder.recordKey,
             builder.recordValue,
+            builder.inputFileFormat,
+            builder.inputFilePath,
             builder.mode,
             builder.reportInterval
     )
@@ -33,18 +39,28 @@ class BenchmarkConfig(val tag: String,
         return record!!
     }
 
+    fun parser(): Parser<ByteBuffer> {
+        return when (inputFileFormat) {
+            BenchmarkClient.FileFormat.LTSV -> LTSVParser()
+            BenchmarkClient.FileFormat.JSON -> JSONParser()
+            BenchmarkClient.FileFormat.MessagePack -> MessagePackParser()
+        }
+    }
+
     class Builder private constructor() {
         constructor(init: Builder.() -> Unit): this() {
             init()
         }
 
         lateinit var tag: String
-        var timestampType: BenchmarkClient.TimestampType = BenchmarkClient.TimestampType.EventTime
+        var timestampType = BenchmarkClient.TimestampType.EventTime
         var nEvents: Int = 10000
         var interval: Int? = null
         var period: Int? = null
         lateinit var recordKey: String
         lateinit var recordValue: String
+        var inputFileFormat = BenchmarkClient.FileFormat.LTSV
+        var inputFilePath: String? = null
         lateinit var mode: BenchmarkClient.Mode
         var reportInterval: Int = 1
 
@@ -61,6 +77,10 @@ class BenchmarkConfig(val tag: String,
         fun recordKey(init: Builder.() -> String) = apply { recordKey = init() }
 
         fun recordValue(init: Builder.() -> String) = apply { recordValue = init() }
+
+        fun inputFileFormat(init: Builder.() -> BenchmarkClient.FileFormat) = apply { inputFileFormat = init() }
+
+        fun inputFilePath(init: Builder.() -> String) = apply { inputFilePath = init() }
 
         fun reportInterval(init: Builder.() -> Int) = apply { reportInterval = init() }
 
