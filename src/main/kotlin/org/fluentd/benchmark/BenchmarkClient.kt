@@ -89,7 +89,15 @@ interface BenchmarkClient {
 
     suspend fun emitEventsInInterval(interval: Int = 1): Job
     suspend fun emitEventsInFlood(): Job
-    suspend fun emitEventsInPeriod(): Job
+    suspend fun emitEventsInPeriod(): Job {
+        return when {
+            config.period != null && config.period!! > 0 -> {
+                val interval = floor(config.period!!.toFloat() / config.nEvents * TimeUnit.MICROSECONDS.toMicros(1))
+                emitEventsInInterval(interval.toLong())
+            }
+            else -> emitEventsInInterval()
+        }
+    }
 
     fun emitEvent(data: Map<String, Any>) {
         when (config.timestampType) {

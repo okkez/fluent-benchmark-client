@@ -38,11 +38,4 @@ class FixedRecordBenchmarkClient(
             fluency.close()
         }
     }
-
-    override suspend fun emitEventsInPeriod(): Job {
-        return when {
-            config.period != null && config.period > 0 -> emitEventsInInterval(config.nEvents / config.period)
-            else -> emitEventsInInterval()
-        }
-    }
 }
