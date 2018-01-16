@@ -4,7 +4,7 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
 import org.slf4j.LoggerFactory
 
-class PeriodicalReporter(private val statistics: SendChannel<Statistics.Recorder>, private val interval: Int = 1000) {
+class PeriodicalReporter(private val statistics: SendChannel<Statistics.Recorder>, private val interval: Long = 1000) {
     companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)!!
     }

@@ -5,6 +5,8 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 import java.nio.ByteBuffer
+import java.util.concurrent.TimeUnit
+import kotlin.math.floor
 
 interface BenchmarkClient {
 
@@ -67,11 +69,13 @@ interface BenchmarkClient {
 
     fun run() = runBlocking {
         statistics = createStatistics()
-        val reporter = PeriodicalReporter(statistics, config.reportInterval * 1000)
+        val reporter = PeriodicalReporter(statistics, TimeUnit.SECONDS.toMillis(config.reportInterval))
         mainJob = when(config.mode) {
             Mode.FIXED_INTERVAL -> {
                 when {
-                    config.interval != null && config.interval!! > 0 -> emitEventsInInterval(config.interval!!)
+                    config.interval != null && config.interval!! > 0 -> {
+                        emitEventsInInterval(config.interval!! * TimeUnit.SECONDS.toSeconds(1))
+                    }
                     else -> emitEventsInInterval()
                 }
             }
@@ -87,7 +91,7 @@ interface BenchmarkClient {
         reporter.stop()
     }
 
-    suspend fun emitEventsInInterval(interval: Int = 1): Job
+    suspend fun emitEventsInInterval(interval: Long = TimeUnit.SECONDS.toMicros(1)): Job
     suspend fun emitEventsInFlood(): Job
     suspend fun emitEventsInPeriod(): Job {
         return when {

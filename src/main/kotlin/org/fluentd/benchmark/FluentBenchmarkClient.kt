@@ -126,7 +126,7 @@ class FluentBenchmarkClient: Runnable {
                 "Report statistics at intervals of INTERVAL seconds/minutes/hours",
                 "If INTERVAL isn't specified, report each 1 second"
             ])
-    private var reportInterval: Int = 1
+    private var reportInterval: Long = 1
 
     @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
     private var helpRequested: Boolean = false

@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
+import java.util.concurrent.TimeUnit
 
 class FixedRecordBenchmarkClient(
         override val host: String,
@@ -16,12 +17,12 @@ class FixedRecordBenchmarkClient(
     override lateinit var mainJob: Job
     override lateinit var statistics: SendChannel<Statistics.Recorder>
 
-    override suspend fun emitEventsInInterval(interval: Int): Job {
+    override suspend fun emitEventsInInterval(interval: Long): Job {
         return launch {
             repeat(config.nEvents) {
                 emitEvent(config.record())
                 statistics.send(Statistics.Recorder.Update)
-                delay(interval * 1000L)
+                delay(interval, TimeUnit.MICROSECONDS)
             }
             statistics.send(Statistics.Recorder.Finish)
             fluency.close()

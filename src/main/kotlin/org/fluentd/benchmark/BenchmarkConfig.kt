@@ -12,7 +12,7 @@ class BenchmarkConfig(val tag: String,
                       val inputFileFormat: BenchmarkClient.FileFormat,
                       val inputFilePath: String?,
                       val mode: BenchmarkClient.Mode,
-                      val reportInterval: Int) {
+                      val reportInterval: Long) {
 
     private constructor(builder: Builder): this(
             builder.tag,
@@ -62,7 +62,7 @@ class BenchmarkConfig(val tag: String,
         var inputFileFormat = BenchmarkClient.FileFormat.LTSV
         var inputFilePath: String? = null
         lateinit var mode: BenchmarkClient.Mode
-        var reportInterval: Int = 1
+        var reportInterval: Long = 1
 
         fun tag(init: Builder.() -> String) = apply { tag = init() }
 
@@ -82,7 +82,7 @@ class BenchmarkConfig(val tag: String,
 
         fun inputFilePath(init: Builder.() -> String) = apply { inputFilePath = init() }
 
-        fun reportInterval(init: Builder.() -> Int) = apply { reportInterval = init() }
+        fun reportInterval(init: Builder.() -> Long) = apply { reportInterval = init() }
 
         fun mode(init: Builder.() -> BenchmarkClient.Mode) = apply { mode = init() }
 
