@@ -1,12 +1,19 @@
 package org.fluentd.benchmark
 
-class LTSVParser: Parser<Map<String, Any>> {
-    override fun parse(text: String, block: (Map<String, Any>) -> Unit) {
-        val map = HashMap<String, Any>()
-        text.splitToSequence("\t").forEach {
+import org.msgpack.core.MessagePack
+import java.nio.ByteBuffer
+
+class LTSVParser: Parser<ByteBuffer> {
+    override fun parse(text: String, block: (ByteBuffer) -> Unit) {
+        val packer = MessagePack.newDefaultBufferPacker()
+        val list = text.split("\t")
+        packer.packMapHeader(list.size)
+        list.forEach {
             val pair = it.split(Regex(""":"""), 2)
-            map.put(pair[0], pair[1])
+            packer.packString(pair[0])
+            packer.packString(pair[1])
         }
-        block(map)
+        packer.close()
+        block(ByteBuffer.wrap(packer.toByteArray()))
     }
 }
