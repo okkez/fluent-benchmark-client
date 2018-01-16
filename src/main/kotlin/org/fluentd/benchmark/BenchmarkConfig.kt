@@ -22,11 +22,16 @@ class BenchmarkConfig(val tag: String,
             builder.reportInterval
     )
 
+    private var record: Map<String, Any>? = null
+
     companion object {
         fun create(init: Builder.() -> Unit) = Builder(init).build()
     }
 
-    fun record(): Map<String, Any> = mapOf(recordKey to recordValue)
+    fun record(): Map<String, Any> {
+        record = record ?: mapOf(recordKey to recordValue)
+        return record!!
+    }
 
     class Builder private constructor() {
         constructor(init: Builder.() -> Unit): this() {
