@@ -106,7 +106,7 @@ class FluentBenchmarkClient: Runnable {
                 "Format of input file. ltsv/json/msgpack",
                 "This option must use with --input-file"
             ])
-    private var inputFileFormat: String = "ltsv"
+    private var inputFileFormat: BenchmarkClient.FileFormat = BenchmarkClient.FileFormat.LTSV
 
     @Option(names = ["--input-file"], paramLabel = "PATH",
             description = ["Input file path"])
@@ -135,8 +135,6 @@ class FluentBenchmarkClient: Runnable {
     private var versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
-        val fluencyConfig = buildFluencyConfig()
-
         val benchmarkMode = when {
             fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
             fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
@@ -152,17 +150,19 @@ class FluentBenchmarkClient: Runnable {
             period = fixedPeriod
             recordKey = recordKey
             recordValue = recordValue
+            inputFileFormat = inputFileFormat
+            inputFilePath = inputFilePath
             mode = benchmarkMode
             reportInterval = reportInterval
         }
 
         log.info("Run benchmark!")
-        val client = BenchmarkClient(
-                host = host,
-                port = port,
-                fluencyConfig = fluencyConfig,
-                config = benchmarkConfig
-        )
+        val client = BenchmarkClient.create {
+            host = host
+            port = port
+            fluencyConfig = buildFluencyConfig()
+            benchmarkConfig { benchmarkConfig }
+        }
         try {
             client.run()
         } finally {

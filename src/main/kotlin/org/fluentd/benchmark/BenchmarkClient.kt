@@ -4,11 +4,9 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
+import java.nio.ByteBuffer
 
-class BenchmarkClient(host: String,
-                      port: Int,
-                      fluencyConfig: Fluency.Config,
-                      private val config: BenchmarkConfig) {
+interface BenchmarkClient {
 
     enum class Mode {
         FIXED_INTERVAL,
@@ -16,14 +14,56 @@ class BenchmarkClient(host: String,
         FLOOD,
     }
 
+    enum class FileFormat {
+        LTSV,
+        JSON,
+        MessagePack,
+    }
+
     enum class TimestampType {
         EventTime,
         Integer
     }
 
-    private val fluency = Fluency.defaultFluency(host, port, fluencyConfig)
-    private lateinit var mainJob: Job
-    private lateinit var statistics: SendChannel<Statistics.Recorder>
+    val host: String
+    val port: Int
+    val fluencyConfig: Fluency.Config
+    val config: BenchmarkConfig
+    val fluency: Fluency // = Fluency.defaultFluency(host, port, fluencyConfig)
+    var mainJob: Job
+    var statistics: SendChannel<Statistics.Recorder>
+
+    companion object {
+        fun create(init: Builder.() -> Unit) = Builder(init).build()
+    }
+
+    class Builder private constructor() {
+        constructor(init: Builder.() -> Unit): this() {
+            init()
+        }
+
+        lateinit var host: String
+        var port: Int = 24224
+        lateinit var fluencyConfig: Fluency.Config
+        lateinit var benchmarkCofnig: BenchmarkConfig
+
+        fun host(init: Builder.() -> String) = apply { host = init() }
+        fun port(init: Builder.() -> Int) = apply { port = init() }
+        fun fluencyConfig(init: Builder.() -> Fluency.Config) = apply { fluencyConfig = init() }
+        fun benchmarkConfig(init: Builder.() -> BenchmarkConfig) = apply { benchmarkCofnig = init() }
+
+        fun build(): BenchmarkClient {
+            return when {
+                benchmarkCofnig.inputFilePath.isNullOrEmpty() -> {
+                    DynamicRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
+                }
+                else -> {
+                    FixedRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
+                }
+            }
+        }
+
+    }
 
     fun run() = runBlocking {
         statistics = createStatistics()
@@ -31,7 +71,7 @@ class BenchmarkClient(host: String,
         mainJob = when(config.mode) {
             Mode.FIXED_INTERVAL -> {
                 when {
-                    config.interval != null && config.interval > 0 -> emitEventsInInterval(config.interval)
+                    config.interval != null && config.interval!! > 0 -> emitEventsInInterval(config.interval!!)
                     else -> emitEventsInInterval()
                 }
             }
@@ -39,45 +79,30 @@ class BenchmarkClient(host: String,
             Mode.FLOOD -> emitEventsInFlood()
         }
         reporter.run()
-        if (config.period != null && config.period > 0) {
-            delay(config.period * 1000L)
+        if (config.period != null && config.period!! > 0) {
+            delay(config.period!! * 1000L)
             mainJob.cancel()
         }
         mainJob.join()
         reporter.stop()
     }
 
-    private suspend fun emitEventsInInterval(interval: Int = 1): Job {
-        return launch {
-            repeat(config.nEvents) {
-                emitEvent(config.record())
-                statistics.send(Statistics.Recorder.Update)
-                delay(interval * 1000L)
+    suspend fun emitEventsInInterval(interval: Int = 1): Job
+    suspend fun emitEventsInFlood(): Job
+    suspend fun emitEventsInPeriod(): Job
+
+    fun emitEvent(data: Map<String, Any>) {
+        when (config.timestampType) {
+            TimestampType.EventTime -> {
+                fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
             }
-            statistics.send(Statistics.Recorder.Finish)
-            fluency.close()
-        }
-    }
-
-    private suspend fun emitEventsInFlood(): Job {
-        return launch {
-            while (isActive) {
-                emitEvent(config.record())
-                statistics.send(Statistics.Recorder.Update)
+            TimestampType.Integer -> {
+                fluency.emit(config.tag, data)
             }
-            statistics.send(Statistics.Recorder.Finish)
-            fluency.close()
         }
     }
 
-    private suspend fun emitEventsInPeriod(): Job {
-        return when {
-            config.period != null && config.period > 0 -> emitEventsInInterval(config.nEvents / config.period)
-            else -> emitEventsInInterval()
-        }
-    }
-
-    private fun emitEvent(data: Map<String, Any>) {
+    fun emitEvent(data: ByteBuffer) {
         when (config.timestampType) {
             TimestampType.EventTime -> {
                 fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
