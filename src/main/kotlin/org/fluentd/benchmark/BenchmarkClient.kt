@@ -16,6 +16,11 @@ class BenchmarkClient(host: String,
         FLOOD,
     }
 
+    enum class TimestampType {
+        EventTime,
+        Integer
+    }
+
     private val fluency = Fluency.defaultFluency(host, port, fluencyConfig)
     private lateinit var mainJob: Job
     private lateinit var statistics: SendChannel<Statistics.Recorder>
@@ -74,10 +79,10 @@ class BenchmarkClient(host: String,
 
     private fun emitEvent(data: Map<String, Any>) {
         when (config.timestampType) {
-            FluentBenchmarkClient.TimestampType.EventTime -> {
+            TimestampType.EventTime -> {
                 fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
             }
-            FluentBenchmarkClient.TimestampType.Integer -> {
+            TimestampType.Integer -> {
                 fluency.emit(config.tag, data)
             }
         }

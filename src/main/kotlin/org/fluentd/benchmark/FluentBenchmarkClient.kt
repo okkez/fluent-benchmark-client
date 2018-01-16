@@ -115,14 +115,9 @@ class FluentBenchmarkClient: Runnable {
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
     private var tag: String = "benchmark.data"
 
-    enum class TimestampType {
-        EventTime,
-        Integer
-    }
-
     @Option(names = ["--timestamp-type"], paramLabel = "TYPE",
             description = ["Timestamp type for each event: EventTime, Integer"])
-    private var timestampType: TimestampType = TimestampType.EventTime
+    private var timestampType: BenchmarkClient.TimestampType = BenchmarkClient.TimestampType.EventTime
 
     // Report options
     @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",

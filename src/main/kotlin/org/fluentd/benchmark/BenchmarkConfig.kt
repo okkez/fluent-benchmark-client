@@ -1,7 +1,7 @@
 package org.fluentd.benchmark
 
 class BenchmarkConfig(val tag: String,
-                      val timestampType: FluentBenchmarkClient.TimestampType,
+                      val timestampType: BenchmarkClient.TimestampType,
                       val nEvents: Int,
                       val interval: Int?,
                       val period: Int?,
@@ -34,7 +34,7 @@ class BenchmarkConfig(val tag: String,
         }
 
         lateinit var tag: String
-        var timestampType: FluentBenchmarkClient.TimestampType = FluentBenchmarkClient.TimestampType.EventTime
+        var timestampType: BenchmarkClient.TimestampType = BenchmarkClient.TimestampType.EventTime
         var nEvents: Int = 10000
         var interval: Int? = null
         var period: Int? = null
@@ -45,7 +45,7 @@ class BenchmarkConfig(val tag: String,
 
         fun tag(init: Builder.() -> String) = apply { tag = init() }
 
-        fun timestampType(init: Builder.() -> FluentBenchmarkClient.TimestampType) = apply { timestampType = init() }
+        fun timestampType(init: Builder.() -> BenchmarkClient.TimestampType) = apply { timestampType = init() }
 
         fun nEvents(init: Builder.() -> Int) = apply { nEvents = init() }
 
