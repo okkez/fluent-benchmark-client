@@ -2,8 +2,6 @@ package org.fluentd.benchmark
 
 import kotlinx.coroutines.experimental.CompletableDeferred
 import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.sync.Mutex
-import kotlinx.coroutines.experimental.sync.withLock
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicLong
 
