@@ -1,12 +1,10 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
 import java.io.File
+import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.experimental.buildSequence
@@ -23,14 +21,28 @@ class DynamicRecordBenchmarkClient(
     override val eventCounter: AtomicLong = AtomicLong()
 
     private val parser = config.parser()
+    private val records = mutableListOf<ByteBuffer>()
+
+    override fun run() = runBlocking {
+        prepareRecords()
+        println(records.size)
+        super.run()
+    }
+
+    private fun prepareRecords() {
+        val reader = File(config.inputFilePath).bufferedReader()
+        reader.lines().forEach {
+            parser.parse(it) {
+                records.add(it)
+            }
+        }
+    }
 
     suspend override fun emitEventsInInterval(interval: Long): Job {
         return launch {
             while (isActive) {
-                for (line in readLines()) {
-                    parser.parse(line) {
-                        emitEvent(it)
-                    }
+                records.forEach {
+                    emitEvent(it)
                     delay(interval, TimeUnit.MICROSECONDS)
                     val response = CompletableDeferred<Statistics>()
                     statistics.send(Statistics.Recorder.Get(response))
@@ -47,12 +59,10 @@ class DynamicRecordBenchmarkClient(
     suspend override fun emitEventsInFlood(): Job {
         return launch {
             while (isActive) {
-                for (line in readLines()) {
-                    parser.parse(line) {
-                        emitEvent(it)
-                    }
+                records.forEach {
+                    emitEvent(it)
                     if (!isActive) {
-                        break
+                        return@forEach
                     }
                 }
 
