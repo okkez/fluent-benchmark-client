@@ -15,56 +15,56 @@ class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["-H", "--host"], paramLabel = "HOST",
             description = ["The IP address or host name of the server (localhost)"])
-    private var host: String = "localhost"
+    private var _host: String = "localhost"
 
     @Option(names = ["-P", "--port"], paramLabel = "PORT",
             description = ["The port number of the host (24224)"])
-    private var port: Int = 24224
+    private var _port: Int = 24224
 
     // TODO Support authentication related options when Fluency supports them
     @Option(names = ["--shared-key"], paramLabel = "SHAREDKEY", hidden = true, description = ["The shared key"])
-    private var sharedKey: String? = null
+    private var _sharedKey: String? = null
 
     @Option(names = ["--username"], paramLabel = "USERNAME", hidden = true, description = ["The username for authentication"])
-    private var username: String? = null
+    private var _username: String? = null
 
     @Option(names = ["--password"], paramLabel = "PASSWORD", hidden = true, description = ["The password for authentication"])
-    private var password: String? = null
+    private var _password: String? = null
 
     @Option(names = ["--require-ack-response"], description = ["Change the protocol to at-least-once (false)"])
-    private var requireAckResponse: Boolean = false
+    private var _requireAckResponse: Boolean = false
 
     // Buffer options
     @Option(names = ["--buffer-chunk-initial-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Initial chunk buffer size (1MB)"])
-    private var bufferChunkInitialSize: Int? = null
+    private var _bufferChunkInitialSize: Int? = null
 
     @Option(names = ["--buffer-chunk-retention-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["Threshold chunk buffer size to flush (4MB)"])
-    private var bufferChunkRetentionSize: Int? = null
+    private var _bufferChunkRetentionSize: Int? = null
 
     @Option(names = ["--max-buffer-size"], paramLabel = "SIZE",
             converter = [SizeTypeConverter::class],
             description = ["The max buffer size (16MB)"])
-    private var maxBufferSize: Long? = null
+    private var _maxBufferSize: Long? = null
 
     @Option(names = ["--wait-until-buffer-flushed"], paramLabel = "SECONDS",
             description = ["Max wait SECONDS until all buffers are flushed"])
-    private var waitUntilBufferFlushed: Int? = null
+    private var _waitUntilBufferFlushed: Int? = null
 
     @Option(names = ["--wait-until-flusher-terminated"], paramLabel = "SECONDS",
             description = ["Max wait SECONDS until the flusher is terminated"])
-    private var waitUntilFlusherTerminated: Int? = null
+    private var _waitUntilFlusherTerminated: Int? = null
 
     @Option(names = ["--flush-interval"], paramLabel = "MILLISECONDS",
             description = ["Flush interval in milli seconds"])
-    private var flushInterval: Int? = null
+    private var _flushInterval: Int? = null
 
     // Load options
     @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events (1000)"])
-    private var nEvents: Int = 1000
+    private var _nEvents: Int = 1000
 
     @Option(names = ["--interval"], paramLabel = "INTERVAL",
             converter = [TimeTypeConverter::class],
@@ -73,7 +73,7 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --period"
             ])
-    private var fixedInterval: Int? = null
+    private var _fixedInterval: Int? = null
 
     @Option(names = ["--period"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
@@ -82,7 +82,7 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --interval"
             ])
-    private var fixedPeriod: Int? = null
+    private var _fixedPeriod: Int? = null
 
     @Option(names = ["--flood"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
@@ -91,33 +91,33 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --interval, --period"
             ])
-    private var flood: Int? = null
+    private var _flood: Int? = null
 
     @Option(names = ["--record-key"], paramLabel = "KEY",
             description = ["The KEY of record"])
-    private var recordKey: String = "message"
+    private var _recordKey: String = "message"
 
     @Option(names = ["--record-value"], paramLabel = "MESSAGE",
             description = ["The MESSAGE of record"])
-    private var recordValue: String = "Hello, Fluentd! This is a test message."
+    private var _recordValue: String = "Hello, Fluentd! This is a test message."
 
     @Option(names = ["--input-file-format"], paramLabel = "FORMAT",
             description = [
                 "Format of input file. ltsv/json/msgpack",
                 "This option must use with --input-file"
             ])
-    private var inputFileFormat: BenchmarkClient.FileFormat = BenchmarkClient.FileFormat.LTSV
+    private var _inputFileFormat: BenchmarkClient.FileFormat = BenchmarkClient.FileFormat.LTSV
 
     @Option(names = ["--input-file"], paramLabel = "PATH",
             description = ["Input file path"])
-    private var inputFilePath: String? = null
+    private var _inputFilePath: String? = null
 
     @Option(names = ["--tag"], paramLabel = "TAG", description = ["Tag for each event"])
-    private var tag: String = "benchmark.data"
+    private var _tag: String = "benchmark.data"
 
     @Option(names = ["--timestamp-type"], paramLabel = "TYPE",
             description = ["Timestamp type for each event: EventTime, Integer"])
-    private var timestampType: BenchmarkClient.TimestampType = BenchmarkClient.TimestampType.EventTime
+    private var _timestampType: BenchmarkClient.TimestampType = BenchmarkClient.TimestampType.EventTime
 
     // Report options
     @Option(names = ["--report-periodically"], paramLabel = "INTERVAL",
@@ -126,40 +126,40 @@ class FluentBenchmarkClient: Runnable {
                 "Report statistics at intervals of INTERVAL seconds/minutes/hours",
                 "If INTERVAL isn't specified, report each 1 second"
             ])
-    private var reportInterval: Long = 1
+    private var _reportInterval: Long = 1
 
     @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
-    private var helpRequested: Boolean = false
+    private var _helpRequested: Boolean = false
 
     @Option(names = ["-V", "--version"], versionHelp = true, description = ["Display version info and exit"])
-    private var versionInfoRequested: Boolean = false
+    private var _versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
         val benchmarkMode = when {
-            fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
-            fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
-            flood != null -> BenchmarkClient.Mode.FLOOD
+            _fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
+            _fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
+            _flood != null -> BenchmarkClient.Mode.FLOOD
             else -> BenchmarkClient.Mode.FLOOD
         }
 
         val benchmarkConfig = BenchmarkConfig.create {
-            tag = tag
-            timestampType = timestampType
-            nEvents = nEvents
-            interval = fixedInterval
-            period = fixedPeriod
-            recordKey = recordKey
-            recordValue = recordValue
-            inputFileFormat = inputFileFormat
-            inputFilePath = inputFilePath
+            tag = _tag
+            timestampType = _timestampType
+            nEvents = _nEvents
+            interval = _fixedInterval
+            period = _fixedPeriod
+            recordKey = _recordKey
+            recordValue = _recordValue
+            inputFileFormat = _inputFileFormat
+            inputFilePath = _inputFilePath
             mode = benchmarkMode
-            reportInterval = reportInterval
+            reportInterval = _reportInterval
         }
 
         log.info("Run benchmark!")
         val client = BenchmarkClient.create {
-            host = host
-            port = port
+            host = _host
+            port = _port
             fluencyConfig = buildFluencyConfig()
             benchmarkConfig { benchmarkConfig }
         }
@@ -173,25 +173,25 @@ class FluentBenchmarkClient: Runnable {
 
     private fun buildFluencyConfig(): Fluency.Config {
         val conf: Fluency.Config = Fluency.Config()
-        conf.isAckResponseMode = requireAckResponse
+        conf.isAckResponseMode = _requireAckResponse
 
-        if (bufferChunkInitialSize != null) {
-            conf.bufferChunkInitialSize = bufferChunkInitialSize
+        if (_bufferChunkInitialSize != null) {
+            conf.bufferChunkInitialSize = _bufferChunkInitialSize
         }
-        if (bufferChunkRetentionSize != null) {
-            conf.bufferChunkRetentionSize = bufferChunkRetentionSize
+        if (_bufferChunkRetentionSize != null) {
+            conf.bufferChunkRetentionSize = _bufferChunkRetentionSize
         }
-        if (maxBufferSize != null) {
-            conf.maxBufferSize = maxBufferSize
+        if (_maxBufferSize != null) {
+            conf.maxBufferSize = _maxBufferSize
         }
-        if (waitUntilBufferFlushed != null && waitUntilBufferFlushed!! > 0) {
-            conf.waitUntilBufferFlushed = waitUntilBufferFlushed
+        if (_waitUntilBufferFlushed != null && _waitUntilBufferFlushed!! > 0) {
+            conf.waitUntilBufferFlushed = _waitUntilBufferFlushed
         }
-        if (waitUntilFlusherTerminated != null && waitUntilFlusherTerminated!! > 0) {
-            conf.waitUntilFlusherTerminated = waitUntilFlusherTerminated
+        if (_waitUntilFlusherTerminated != null && _waitUntilFlusherTerminated!! > 0) {
+            conf.waitUntilFlusherTerminated = _waitUntilFlusherTerminated
         }
-        if (flushInterval != null && flushInterval!! > 0) {
-            conf.flushIntervalMillis = flushInterval
+        if (_flushInterval != null && _flushInterval!! > 0) {
+            conf.flushIntervalMillis = _flushInterval
         }
 
         return conf
