@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
+import java.lang.management.ManagementFactory
 
 @Command(name = "fluent-benchmark-client", version = ["1.0.0"],
         sortOptions = false, abbreviateSynopsis = true,
@@ -161,8 +162,8 @@ class FluentBenchmarkClient: Runnable {
             mode = benchmarkMode
             reportInterval = _reportInterval
         }
-
-        log.info("Run benchmark!")
+        var pid = ManagementFactory.getRuntimeMXBean().name.split(Regex("""@"""), 2)[0]
+        log.info("Run benchmark! PID=$pid")
         val client = BenchmarkClient.create {
             host = _host
             port = _port
