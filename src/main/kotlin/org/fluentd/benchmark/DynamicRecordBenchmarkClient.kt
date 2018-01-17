@@ -8,7 +8,6 @@ import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
 import java.io.File
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.experimental.buildSequence
 
 class DynamicRecordBenchmarkClient(
