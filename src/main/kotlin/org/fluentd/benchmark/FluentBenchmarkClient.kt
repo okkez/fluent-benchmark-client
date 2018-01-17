@@ -147,7 +147,13 @@ class FluentBenchmarkClient: Runnable {
             timestampType = _timestampType
             nEvents = _nEvents
             interval = _fixedInterval
-            period = _fixedPeriod
+            period {
+                when (benchmarkMode) {
+                    BenchmarkClient.Mode.FIXED_PERIOD -> _fixedPeriod
+                    BenchmarkClient.Mode.FLOOD -> _flood
+                    else -> null
+                }
+            }
             recordKey = _recordKey
             recordValue = _recordValue
             inputFileFormat = _inputFileFormat
