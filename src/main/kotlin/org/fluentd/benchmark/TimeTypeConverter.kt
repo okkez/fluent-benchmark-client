@@ -2,15 +2,15 @@ package org.fluentd.benchmark
 
 import picocli.CommandLine
 
-class TimeTypeConverter: CommandLine.ITypeConverter<Int> {
-    override fun convert(value: String?): Int {
+class TimeTypeConverter: CommandLine.ITypeConverter<Long> {
+    override fun convert(value: String?): Long {
         if (value.isNullOrEmpty()) {
             return 0
         }
         val pattern = Regex("""\A(\d+)([smh])""")
         val m = pattern.matchEntire(value!!)
         if (m != null) {
-            val digit = m.groupValues[1].toInt()
+            val digit = m.groupValues[1].toLong()
             val unit = when (m.groupValues[2]) {
                 "s" -> 1
                 "m" -> 60
