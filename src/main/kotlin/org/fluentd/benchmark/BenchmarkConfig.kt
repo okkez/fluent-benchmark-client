@@ -1,5 +1,6 @@
 package org.fluentd.benchmark
 
+import org.msgpack.core.MessagePack
 import java.nio.ByteBuffer
 
 class BenchmarkConfig(val tag: String,
@@ -28,15 +29,16 @@ class BenchmarkConfig(val tag: String,
             builder.reportInterval
     )
 
-    private var record: Map<String, Any>? = null
-
     companion object {
         fun create(init: Builder.() -> Unit) = Builder(init).build()
     }
 
-    fun record(): Map<String, Any> {
-        record = record ?: mapOf(recordKey to recordValue)
-        return record!!
+    fun record(): ByteBuffer {
+        val packer = MessagePack.newDefaultBufferPacker()
+        packer.packMapHeader(1)
+        packer.packString(recordKey)
+        packer.packString(recordValue)
+        return ByteBuffer.wrap(packer.toByteArray())
     }
 
     fun parser(): Parser<ByteBuffer> {

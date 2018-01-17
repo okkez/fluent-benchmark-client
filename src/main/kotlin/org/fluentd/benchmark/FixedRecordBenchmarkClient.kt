@@ -19,13 +19,14 @@ class FixedRecordBenchmarkClient(
     override lateinit var statistics: SendChannel<Statistics.Recorder>
     override val eventCounter: AtomicLong = AtomicLong()
 
+    private val record = config.record()
 
     /**
      * @param interval The intervals in microseconds
      */
     override suspend fun emitEventsInInterval(interval: Long): Job = launch {
         repeat(config.nEvents) {
-            emitEvent(config.record())
+            emitEvent(record)
             delay(interval, TimeUnit.MICROSECONDS)
         }
         statistics.send(Statistics.Recorder.Finish)
@@ -34,7 +35,7 @@ class FixedRecordBenchmarkClient(
 
     override suspend fun emitEventsInFlood(): Job = launch {
         while (isActive) {
-            emitEvent(config.record())
+            emitEvent(record)
         }
         statistics.send(Statistics.Recorder.Finish)
         fluency.close()
