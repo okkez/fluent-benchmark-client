@@ -88,7 +88,7 @@ interface BenchmarkClient {
             Mode.FLOOD -> emitEventsInFlood()
         }
         reporter.run()
-        if (config.period != null && config.period!! > 0) {
+        if (config.period != null && config.period!! > 0 && config.mode == Mode.FLOOD) {
             delay(config.period!!, TimeUnit.SECONDS)
             mainJob.cancel()
         }
@@ -101,7 +101,7 @@ interface BenchmarkClient {
     suspend fun emitEventsInPeriod(): Job {
         return when {
             config.period != null && config.period!! > 0 -> {
-                val interval = floor(config.period!!.toFloat() / config.nEvents * TimeUnit.MICROSECONDS.toMicros(1))
+                val interval = floor(config.period!!.toFloat() / config.nEvents * TimeUnit.SECONDS.toMicros(1))
                 emitEventsInInterval(interval.toLong())
             }
             else -> emitEventsInInterval()
