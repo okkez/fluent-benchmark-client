@@ -1,14 +1,16 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CompletableDeferred
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.runBlocking
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.floor
-import kotlin.system.measureNanoTime
 
 interface BenchmarkClient {
 
@@ -77,7 +79,7 @@ interface BenchmarkClient {
             Mode.FIXED_INTERVAL -> {
                 when {
                     config.interval != null && config.interval!! > 0 -> {
-                        emitEventsInInterval(config.interval!! * TimeUnit.SECONDS.toSeconds(1))
+                        emitEventsInInterval(config.interval!! * TimeUnit.SECONDS.toMicros(1))
                     }
                     else -> emitEventsInInterval()
                 }
@@ -87,7 +89,7 @@ interface BenchmarkClient {
         }
         reporter.run()
         if (config.period != null && config.period!! > 0) {
-            delay(config.period!! * 1000L)
+            delay(config.period!!, TimeUnit.SECONDS)
             mainJob.cancel()
         }
         mainJob.join()

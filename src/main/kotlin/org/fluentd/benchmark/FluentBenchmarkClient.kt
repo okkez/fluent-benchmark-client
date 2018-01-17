@@ -83,7 +83,7 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --interval"
             ])
-    private var _fixedPeriod: Int? = null
+    private var _fixedPeriod: Long? = null
 
     @Option(names = ["--flood"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
@@ -92,7 +92,7 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --interval, --period"
             ])
-    private var _flood: Int? = null
+    private var _flood: Long? = null
 
     @Option(names = ["--record-key"], paramLabel = "KEY",
             description = ["The KEY of record"])
@@ -163,7 +163,7 @@ class FluentBenchmarkClient: Runnable {
             reportInterval = _reportInterval
         }
         var pid = ManagementFactory.getRuntimeMXBean().name.split(Regex("""@"""), 2)[0]
-        log.info("Run benchmark! PID=$pid")
+        log.info("Run benchmark! mode=$benchmarkMode PID=$pid")
         val client = BenchmarkClient.create {
             host = _host
             port = _port

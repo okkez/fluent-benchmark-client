@@ -20,6 +20,9 @@ class FixedRecordBenchmarkClient(
     override val eventCounter: AtomicLong = AtomicLong()
 
 
+    /**
+     * @param interval The intervals in microseconds
+     */
     override suspend fun emitEventsInInterval(interval: Long): Job = launch {
         repeat(config.nEvents) {
             emitEvent(config.record())

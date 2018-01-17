@@ -6,7 +6,7 @@ class BenchmarkConfig(val tag: String,
                       val timestampType: BenchmarkClient.TimestampType,
                       val nEvents: Int,
                       val interval: Int?,
-                      val period: Int?,
+                      val period: Long?,
                       val recordKey: String,
                       val recordValue: String,
                       val inputFileFormat: BenchmarkClient.FileFormat,
@@ -56,7 +56,7 @@ class BenchmarkConfig(val tag: String,
         var timestampType = BenchmarkClient.TimestampType.EventTime
         var nEvents: Int = 10000
         var interval: Int? = null
-        var period: Int? = null
+        var period: Long? = null
         lateinit var recordKey: String
         lateinit var recordValue: String
         var inputFileFormat = BenchmarkClient.FileFormat.LTSV
@@ -72,7 +72,7 @@ class BenchmarkConfig(val tag: String,
 
         fun interval(init: Builder.() -> Int?) = apply { interval = init() }
 
-        fun period(init: Builder.() -> Int?) = apply { period = init() }
+        fun period(init: Builder.() -> Long?) = apply { period = init() }
 
         fun recordKey(init: Builder.() -> String) = apply { recordKey = init() }
 
