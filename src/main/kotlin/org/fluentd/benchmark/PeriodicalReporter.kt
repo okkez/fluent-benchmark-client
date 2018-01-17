@@ -24,6 +24,10 @@ class PeriodicalReporter(private val statistics: SendChannel<Statistics.Recorder
                 statistics.send(Statistics.Recorder.Get(response))
                 val s = response.await()
                 val total = s.nEvents()
+                if (total == 0L) {
+                    delay(interval)
+                    continue
+                }
                 log.info("count={} total={} avg={}",
                         total - previous, total, s.average())
                 previous = total
