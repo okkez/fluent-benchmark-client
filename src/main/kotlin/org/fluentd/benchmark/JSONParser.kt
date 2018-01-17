@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 class JSONParser: Parser<ByteBuffer> {
     override fun parse(text: String, block: (ByteBuffer) -> Unit) {
         val objectMapper = jacksonObjectMapper()
-        val map = objectMapper.readValue<Map<String, Any>>(text)
+        val map = objectMapper.readValue<Map<String, Any>>(text.trim())
         val messagepackMapper = ObjectMapper(MessagePackFactory())
         block(ByteBuffer.wrap(messagepackMapper.writeValueAsBytes(map)))
     }
