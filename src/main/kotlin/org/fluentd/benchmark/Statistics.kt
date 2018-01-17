@@ -13,7 +13,6 @@ class Statistics(val start: Instant = Instant.now()) {
     }
 
     private val counter = AtomicLong()
-    private val totalCounter = AtomicLong()
 
     var finish: Instant? = null
         get() {
@@ -21,21 +20,11 @@ class Statistics(val start: Instant = Instant.now()) {
             return field
         }
 
-    fun add(up: Long = 1): Long {
-            totalCounter.addAndGet(up)
-            return counter.addAndGet(up)
-    }
+    fun add(up: Long = 1): Long = counter.addAndGet(up)
 
-    fun nEvents(clear: Boolean = true): Long {
-        return when {
-            clear -> counter.getAndSet(0)
-            else -> counter.get()
-        }
-    }
+    fun set(count: Long): Long = counter.getAndSet(count)
 
-    fun nTotalEvents(): Long {
-        return totalCounter.get()
-    }
+    fun nEvents(): Long = counter.get()
 
     fun totalElapsedTime(): Float {
         finish ?: finish()
@@ -43,7 +32,7 @@ class Statistics(val start: Instant = Instant.now()) {
     }
 
     fun average(elapsed: Long = Instant.now().epochSecond - start.epochSecond): Float {
-        return nTotalEvents() / elapsed.toFloat()
+        return nEvents() / elapsed.toFloat()
     }
 
     fun finish() {
