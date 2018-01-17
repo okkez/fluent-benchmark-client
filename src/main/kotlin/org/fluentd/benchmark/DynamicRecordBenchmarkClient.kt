@@ -62,10 +62,6 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    suspend override fun emitEventsInPeriod(): Job {
-        TODO("not implemented")
-    }
-
     private fun readLines() = buildSequence {
         val reader = File(config.inputFilePath).bufferedReader()
         for (line in reader.lineSequence()) {
