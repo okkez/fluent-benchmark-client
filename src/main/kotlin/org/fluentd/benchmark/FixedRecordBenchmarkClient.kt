@@ -1,9 +1,7 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
 import java.util.concurrent.TimeUnit
 
