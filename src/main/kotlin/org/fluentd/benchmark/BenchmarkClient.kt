@@ -6,7 +6,9 @@ import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.math.floor
+import kotlin.system.measureNanoTime
 
 interface BenchmarkClient {
 
@@ -34,6 +36,7 @@ interface BenchmarkClient {
     val fluency: Fluency // = Fluency.defaultFluency(host, port, fluencyConfig)
     var mainJob: Job
     var statistics: SendChannel<Statistics.Recorder>
+    val eventCounter: AtomicLong
 
     companion object {
         fun create(init: Builder.() -> Unit) = Builder(init).build()
@@ -69,7 +72,7 @@ interface BenchmarkClient {
 
     fun run() = runBlocking {
         statistics = createStatistics()
-        val reporter = PeriodicalReporter(statistics, TimeUnit.SECONDS.toMillis(config.reportInterval))
+        val reporter = PeriodicalReporter(statistics, eventCounter, TimeUnit.SECONDS.toMillis(config.reportInterval))
         mainJob = when(config.mode) {
             Mode.FIXED_INTERVAL -> {
                 when {
@@ -112,6 +115,7 @@ interface BenchmarkClient {
                 fluency.emit(config.tag, data)
             }
         }
+        eventCounter.incrementAndGet()
     }
 
     fun emitEvent(data: ByteBuffer) {
@@ -123,6 +127,7 @@ interface BenchmarkClient {
                 fluency.emit(config.tag, data)
             }
         }
+        eventCounter.incrementAndGet()
     }
 
     fun stop() {

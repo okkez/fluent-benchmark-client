@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 class Statistics(val start: Instant = Instant.now()) {
     sealed class Recorder {
-        object Update: Recorder()
+        class Set(val count: Long): Recorder()
         class Get(val response: CompletableDeferred<Statistics>): Recorder()
         object Finish: Recorder()
     }
@@ -48,7 +48,7 @@ fun createStatistics() = actor<Statistics.Recorder> {
     val statistics = Statistics()
     for (message in channel) {
         when (message) {
-            is Statistics.Recorder.Update -> statistics.add()
+            is Statistics.Recorder.Set -> statistics.set(message.count)
             is Statistics.Recorder.Get -> message.response.complete(statistics)
             is Statistics.Recorder.Finish -> statistics.finish()
         }

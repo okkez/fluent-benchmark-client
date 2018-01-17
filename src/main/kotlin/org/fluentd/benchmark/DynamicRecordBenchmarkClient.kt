@@ -8,6 +8,7 @@ import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 import kotlin.coroutines.experimental.buildSequence
 
 class DynamicRecordBenchmarkClient(
@@ -19,6 +20,7 @@ class DynamicRecordBenchmarkClient(
     override val fluency: Fluency = Fluency.defaultFluency(host, port, fluencyConfig)
     override lateinit var mainJob: Job
     override lateinit var statistics: SendChannel<Statistics.Recorder>
+    override val eventCounter: AtomicLong = AtomicLong()
 
     private val parser = config.parser()
 
@@ -29,12 +31,11 @@ class DynamicRecordBenchmarkClient(
                     parser.parse(line) {
                         emitEvent(it)
                     }
-                    statistics.send(Statistics.Recorder.Update)
                     delay(interval, TimeUnit.MICROSECONDS)
                     val response = CompletableDeferred<Statistics>()
                     statistics.send(Statistics.Recorder.Get(response))
                     val s = response.await()
-                    if (config.nEvents < s.nTotalEvents()) {
+                    if (config.nEvents < s.nEvents()) {
                         return@launch
                     }
                 }
@@ -50,7 +51,6 @@ class DynamicRecordBenchmarkClient(
                     parser.parse(line) {
                         emitEvent(it)
                     }
-                    statistics.send(Statistics.Recorder.Update)
                     if (!isActive) {
                         break
                     }
