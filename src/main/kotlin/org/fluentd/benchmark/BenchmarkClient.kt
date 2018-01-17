@@ -57,10 +57,10 @@ interface BenchmarkClient {
         fun build(): BenchmarkClient {
             return when {
                 benchmarkCofnig.inputFilePath.isNullOrEmpty() -> {
-                    DynamicRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
+                    FixedRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
                 }
                 else -> {
-                    FixedRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
+                    DynamicRecordBenchmarkClient(host, port, fluencyConfig, benchmarkCofnig)
                 }
             }
         }
