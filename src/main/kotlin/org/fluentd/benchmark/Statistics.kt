@@ -31,7 +31,7 @@ class Statistics(val start: Instant = Instant.now()) {
         return (finish!!.toEpochMilli() - start.toEpochMilli()).toFloat() / 1000
     }
 
-    fun average(elapsed: Long = Instant.now().epochSecond - start.epochSecond): Float {
+    fun average(elapsed: Number = Instant.now().epochSecond - start.epochSecond): Float {
         return nEvents() / elapsed.toFloat()
     }
 
