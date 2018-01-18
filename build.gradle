@@ -27,6 +27,23 @@ group 'org.fluentd'
 version '1.0-SNAPSHOT'
 
 mainClassName = "org.fluentd.benchmark.FluentBenchmarkClient"
+applicationDefaultJvmArgs = ['-Dlog4j.configuration=APP_LOG_BASE/config/log4j.properties']
+
+applicationDistribution.from("config/log4j.properties") {
+    into("config/")
+}
+
+shadowDistTar {
+    from("config/log4j.properties") {
+        into("${archiveName.replaceAll(".$extension", "")}/config/")
+    }
+}
+
+shadowDistZip {
+    from("config/log4j.properties") {
+        into("${archiveName.replaceAll(".$extension", "")}/config/")
+    }
+}
 
 repositories {
     mavenCentral()
@@ -51,3 +68,17 @@ compileTestKotlin {
 }
 
 defaultTasks("distTar", "distZip", "shadowdistTar", "shadowdistZip")
+
+startScripts {
+    doLast {
+        unixScript.text = unixScript.text.replaceAll("APP_LOG_BASE", '\\$APP_HOME')
+        windowsScript.text = windowsScript.text.replaceAll("APP_LOG_BASE", "%APP_HOME%")
+    }
+}
+
+startShadowScripts {
+    doLast {
+        unixScript.text = unixScript.text.replaceAll("APP_LOG_BASE", '\\$APP_HOME')
+        windowsScript.text = windowsScript.text.replaceAll("APP_LOG_BASE", "%APP_HOME%")
+    }
+}
