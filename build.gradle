@@ -78,6 +78,8 @@ dependencies {
         exclude group: 'org.junit.platform'
         exclude group: 'org.jetbrains.kotlin'
     }
+    testCompile group: "org.junit.jupiter", name: "junit-jupiter-api", version: "5.0.3"
+    testRuntime group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.0.3"
 }
 
 compileKotlin {
