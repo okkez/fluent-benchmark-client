@@ -1,6 +1,8 @@
 package org.fluentd.benchmark
 
 import org.msgpack.core.MessagePack
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.nio.ByteBuffer
 
 class BenchmarkConfig(val tag: String,
@@ -33,16 +35,18 @@ class BenchmarkConfig(val tag: String,
         fun create(init: Builder.() -> Unit) = Builder(init).build()
     }
 
-    fun record(): ByteBuffer {
-        val packer = MessagePack.newDefaultBufferPacker()
+    fun record(): ByteArray {
+        val buffer = ByteArrayOutputStream()
+        val packer = MessagePack.newDefaultPacker(buffer)
         packer.packMapHeader(1)
         packer.packString(recordKey)
         packer.packString(recordValue)
+        packer.flush()
         packer.close()
-        return ByteBuffer.wrap(packer.toByteArray())
+        return buffer.toByteArray()
     }
 
-    fun parser(): Parser<ByteBuffer> {
+    fun parser(): Parser<ByteArray> {
         return when (inputFileFormat) {
             BenchmarkClient.FileFormat.LTSV -> LTSVParser()
             BenchmarkClient.FileFormat.JSON -> JSONParser()

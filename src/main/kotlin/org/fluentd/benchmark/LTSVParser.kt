@@ -1,11 +1,12 @@
 package org.fluentd.benchmark
 
 import org.msgpack.core.MessagePack
-import java.nio.ByteBuffer
+import java.io.ByteArrayOutputStream
 
-class LTSVParser: Parser<ByteBuffer> {
-    override fun parse(text: String, block: (ByteBuffer) -> Unit) {
-        val packer = MessagePack.newDefaultBufferPacker()
+class LTSVParser: Parser<ByteArray> {
+    override fun parse(text: String, block: (ByteArray) -> Unit) {
+        val buffer = ByteArrayOutputStream()
+        val packer = MessagePack.newDefaultPacker(buffer)
         val list = text.trim().split("\t")
         packer.packMapHeader(list.size)
         list.forEach {
@@ -13,7 +14,7 @@ class LTSVParser: Parser<ByteBuffer> {
             packer.packString(pair[0])
             packer.packString(pair[1])
         }
-        packer.close()
-        block(ByteBuffer.wrap(packer.toByteArray()))
+        packer.flush()
+        block(buffer.toByteArray())
     }
 }

@@ -120,13 +120,13 @@ interface BenchmarkClient {
         eventCounter.incrementAndGet()
     }
 
-    fun emitEvent(data: ByteBuffer) {
+    fun emitEvent(data: ByteArray) {
         when (config.timestampType) {
             TimestampType.EventTime -> {
-                fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data)
+                fluency.emit(config.tag, EventTime.fromEpochMilli(System.currentTimeMillis()), data, 0, data.size)
             }
             TimestampType.Integer -> {
-                fluency.emit(config.tag, data)
+                fluency.emit(config.tag, data, 0, data.size)
             }
         }
         eventCounter.incrementAndGet()

@@ -21,7 +21,7 @@ class DynamicRecordBenchmarkClient(
     override val eventCounter: AtomicLong = AtomicLong()
 
     private val parser = config.parser()
-    private val records = mutableListOf<ByteBuffer>()
+    private val records = mutableListOf<ByteArray>()
 
     override fun run() = runBlocking {
         prepareRecords()
