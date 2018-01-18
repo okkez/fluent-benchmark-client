@@ -49,3 +49,5 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+defaultTasks("distTar", "distZip", "shadowdistTar", "shadowdistZip")
