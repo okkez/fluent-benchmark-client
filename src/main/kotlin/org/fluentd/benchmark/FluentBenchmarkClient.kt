@@ -104,7 +104,7 @@ class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["--input-file-format"], paramLabel = "FORMAT",
             description = [
-                "Format of input file. ltsv/json/msgpack",
+                "Format of input file. ltsv/json",
                 "This option must use with --input-file"
             ])
     private var _inputFileFormat: BenchmarkClient.FileFormat = BenchmarkClient.FileFormat.LTSV

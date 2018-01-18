@@ -23,7 +23,6 @@ interface BenchmarkClient {
     enum class FileFormat {
         LTSV,
         JSON,
-        MessagePack,
     }
 
     enum class TimestampType {

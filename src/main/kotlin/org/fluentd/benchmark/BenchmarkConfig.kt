@@ -50,7 +50,6 @@ class BenchmarkConfig(val tag: String,
         return when (inputFileFormat) {
             BenchmarkClient.FileFormat.LTSV -> LTSVParser()
             BenchmarkClient.FileFormat.JSON -> JSONParser()
-            BenchmarkClient.FileFormat.MessagePack -> MessagePackParser()
         }
     }
 
