@@ -38,7 +38,7 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    suspend override fun emitEventsInInterval(interval: Long): Job {
+    override suspend fun emitEventsInInterval(interval: Long): Job {
         return launch {
             while (isActive) {
                 records.forEach {
@@ -56,7 +56,7 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    suspend override fun emitEventsInFlood(): Job {
+    override suspend fun emitEventsInFlood(): Job {
         return launch {
             while (isActive) {
                 records.forEach {
