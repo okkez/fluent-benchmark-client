@@ -71,11 +71,4 @@ class DynamicRecordBenchmarkClient(
             fluency.close()
         }
     }
-
-    private fun readLines() = buildSequence {
-        val reader = File(config.inputFilePath).bufferedReader()
-        for (line in reader.lineSequence()) {
-            yield(line)
-        }
-    }
 }
