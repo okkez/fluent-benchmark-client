@@ -38,6 +38,7 @@ class BenchmarkConfig(val tag: String,
         packer.packMapHeader(1)
         packer.packString(recordKey)
         packer.packString(recordValue)
+        packer.close()
         return ByteBuffer.wrap(packer.toByteArray())
     }
 
