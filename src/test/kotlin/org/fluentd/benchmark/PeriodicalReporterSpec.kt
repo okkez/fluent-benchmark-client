@@ -14,6 +14,9 @@ import java.util.concurrent.atomic.AtomicLong
 
 object PeriodicalReporterSpec: Spek({
     given("periodical reporter") {
+        beforeEachTest {
+            TestAppender.events.clear()
+        }
         on("run in 1sec w/ interval 100ms") {
             runBlocking {
                 val statistics = Statistics.create()
