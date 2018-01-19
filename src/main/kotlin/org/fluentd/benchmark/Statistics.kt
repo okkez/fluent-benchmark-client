@@ -33,8 +33,6 @@ class Statistics(val start: Instant = Instant.now()) {
             return field
         }
 
-    fun add(up: Long = 1): Long = counter.addAndGet(up)
-
     fun set(count: Long): Long = counter.getAndSet(count)
 
     fun nEvents(): Long = counter.get()
@@ -50,9 +48,5 @@ class Statistics(val start: Instant = Instant.now()) {
 
     fun finish() {
         finish = finish ?: Instant.now()
-    }
-
-    fun format(): String {
-        return ""
     }
 }
