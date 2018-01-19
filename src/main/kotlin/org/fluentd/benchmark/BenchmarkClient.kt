@@ -72,7 +72,7 @@ interface BenchmarkClient {
     }
 
     fun run() = runBlocking {
-        statistics = createStatistics()
+        statistics = Statistics.create()
         val reporter = PeriodicalReporter(statistics, eventCounter, TimeUnit.SECONDS.toMillis(config.reportInterval))
         mainJob = when(config.mode) {
             Mode.FIXED_INTERVAL -> {

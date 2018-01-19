@@ -12,6 +12,19 @@ class Statistics(val start: Instant = Instant.now()) {
         object Finish: Recorder()
     }
 
+    companion object {
+        fun create()= actor<Statistics.Recorder> {
+            val statistics = Statistics()
+            for (message in channel) {
+                when (message) {
+                    is Statistics.Recorder.Set -> statistics.set(message.count)
+                    is Statistics.Recorder.Get -> message.response.complete(statistics)
+                    is Statistics.Recorder.Finish -> statistics.finish()
+                }
+            }
+        }
+    }
+
     private val counter = AtomicLong()
 
     var finish: Instant? = null
@@ -41,16 +54,5 @@ class Statistics(val start: Instant = Instant.now()) {
 
     fun format(): String {
         return ""
-    }
-}
-
-fun createStatistics() = actor<Statistics.Recorder> {
-    val statistics = Statistics()
-    for (message in channel) {
-        when (message) {
-            is Statistics.Recorder.Set -> statistics.set(message.count)
-            is Statistics.Recorder.Get -> message.response.complete(statistics)
-            is Statistics.Recorder.Finish -> statistics.finish()
-        }
     }
 }
