@@ -13,7 +13,7 @@ class Statistics(val start: Instant = Instant.now()) {
     }
 
     companion object {
-        fun create()= actor<Statistics.Recorder> {
+        fun create() = actor<Statistics.Recorder> {
             val statistics = Statistics()
             for (message in channel) {
                 when (message) {
