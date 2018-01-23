@@ -8,11 +8,9 @@ class StatisticsReporter(private val statistics: Statistics) {
     }
 
     fun report() {
-        log.info("""
-
-            totalEvents: ${statistics.nEvents()}
-            totalElapsed(sec): ${statistics.totalElapsedTime()}
-            average(events/sec): ${statistics.average(statistics.totalElapsedTime())}
-            """.trimIndent())
+        log.info("\ntotalEvents: {}\ntotalElapsed(sec): {}\naverage(events/sec): {}",
+                statistics.nEvents(),
+                statistics.totalElapsedTime(),
+                statistics.average(statistics.totalElapsedTime()))
     }
 }
