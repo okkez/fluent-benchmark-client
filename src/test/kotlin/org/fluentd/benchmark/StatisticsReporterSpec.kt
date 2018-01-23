@@ -21,7 +21,13 @@ object StatisticsReporterSpec: Spek({
             val reporter = StatisticsReporter(statistics)
             it("displays statistics") {
                 reporter.report()
+                val event = TestAppender.events.first()
                 assertEquals(1, TestAppender.events.size)
+                assertEquals(3, event.message.parameters.size)
+                val (nEvents, elapsed, average) = event.message.parameters
+                assertEquals(1000L, nEvents)
+                assertEquals(0.2f, elapsed as Float, 0.01f)
+                assertEquals(5000.0f, average as Float, 30f)
             }
         }
     }
