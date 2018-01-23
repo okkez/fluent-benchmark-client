@@ -38,7 +38,9 @@ object PeriodicalReporterSpec: Spek({
                 job.join()
             }
             it("records 10 events") {
+                val event = TestAppender.events.first()
                 assertEquals(10, TestAppender.events.size)
+                assertEquals(3, event.message.parameters.size)
             }
         }
     }
