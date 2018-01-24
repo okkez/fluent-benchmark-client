@@ -44,10 +44,7 @@ class DynamicRecordBenchmarkClient(
                 records.forEach {
                     emitEvent(it)
                     delay(interval, TimeUnit.MICROSECONDS)
-                    val response = CompletableDeferred<Statistics>()
-                    statistics.send(Statistics.Recorder.Get(response))
-                    val s = response.await()
-                    if (config.nEvents < s.nEvents()) {
+                    if (config.nEvents <= eventCounter.get()) {
                         return@launch
                     }
                 }
