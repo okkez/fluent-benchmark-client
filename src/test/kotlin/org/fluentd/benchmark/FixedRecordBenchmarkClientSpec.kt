@@ -11,13 +11,6 @@ import org.komamitsu.fluency.Fluency
 
 object FixedRecordBenchmarkClientSpec: Spek({
     given("a benchmark client") {
-        val server = TestServer()
-        beforeEachTest {
-            server.start()
-        }
-        afterEachTest {
-            server.shutdown()
-        }
         on("runs in flood mode for 1 second") {
             val fluencyConfig = Fluency.Config()
             fluencyConfig.flushIntervalMillis = 100
@@ -36,8 +29,11 @@ object FixedRecordBenchmarkClientSpec: Spek({
 
             }
             val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
+            val server = TestServer()
             it("processes a lot of events") {
-                client.run()
+                server.run {
+                    client.run()
+                }
                 assertTrue(server.processedEvents() > 0L)
                 assertTrue(client.eventCounter.get() > 0L)
                 assertEquals(server.processedEvents(), client.eventCounter.get())
@@ -61,8 +57,11 @@ object FixedRecordBenchmarkClientSpec: Spek({
 
             }
             val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
+            val server = TestServer()
             it("processes 10000 events") {
-                client.run()
+                server.run(10000L) {
+                    client.run()
+                }
                 assertEquals(10000L, client.eventCounter.get())
                 assertEquals(10000L, server.processedEvents())
             }
@@ -85,8 +84,11 @@ object FixedRecordBenchmarkClientSpec: Spek({
 
             }
             val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
+            val server = TestServer()
             it("processes 10000 events") {
-                client.run()
+                server.run(10000L) {
+                    client.run()
+                }
                 assertEquals(10000L, client.eventCounter.get())
                 assertEquals(10000L, server.processedEvents())
             }
