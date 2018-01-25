@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package org.fluentd.benchmark.test
 
 import org.apache.logging.log4j.core.Filter
