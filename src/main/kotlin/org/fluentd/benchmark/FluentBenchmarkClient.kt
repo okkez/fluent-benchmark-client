@@ -7,6 +7,7 @@ import picocli.CommandLine
 import picocli.CommandLine.Command
 import picocli.CommandLine.Option
 import java.lang.management.ManagementFactory
+import kotlin.system.exitProcess
 
 @Command(name = "fluent-benchmark-client", version = ["1.0.0"],
         sortOptions = false, abbreviateSynopsis = true,
@@ -96,11 +97,11 @@ class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["--record-key"], paramLabel = "KEY",
             description = ["The KEY of record"])
-    private var _recordKey: String = "message"
+    private var _recordKey: String = DEFAULT_RECORD_KEY
 
     @Option(names = ["--record-value"], paramLabel = "MESSAGE",
             description = ["The MESSAGE of record"])
-    private var _recordValue: String = "Hello, Fluentd! This is a test message."
+    private var _recordValue: String = DEFAULT_RECORD_VALUE
 
     @Option(names = ["--input-file-format"], paramLabel = "FORMAT",
             description = [
@@ -139,6 +140,7 @@ class FluentBenchmarkClient: Runnable {
     private var _versionInfoRequested: Boolean = false
 
     override fun run() = runBlocking {
+        validateCommandLineArguments()
         val benchmarkMode = when {
             _fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
             _fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
@@ -211,10 +213,32 @@ class FluentBenchmarkClient: Runnable {
         return conf
     }
 
+    private fun validateCommandLineArguments() {
+        if (_fixedInterval != null && _fixedPeriod != null) {
+            throw ArgumentException("--interval conflict with --period")
+        }
+        if (_flood != null && (_fixedInterval != null || _fixedPeriod != null)) {
+            throw ArgumentException("--flood conflict with --interval and --period")
+        }
+        if (_inputFilePath != null && (_recordKey != DEFAULT_RECORD_KEY || _recordValue != DEFAULT_RECORD_VALUE)) {
+            throw ArgumentException("--input-file-path conflict with --record-key and --record-value")
+        }
+    }
+
     companion object {
         val log = LoggerFactory.getLogger(this::class.java.enclosingClass)!!
+
+        private const val DEFAULT_RECORD_KEY = "message"
+        private const val DEFAULT_RECORD_VALUE = "Hello, Fluentd! This is a test message."
+
         @JvmStatic fun main(args: Array<String>) {
-            CommandLine.run(FluentBenchmarkClient(), System.err, *args)
+            try {
+                CommandLine.run(FluentBenchmarkClient(), System.err, *args)
+            } catch (ex: CommandLine.ExecutionException) {
+                System.err.println(ex.cause!!.message)
+                CommandLine.usage(FluentBenchmarkClient(), System.err)
+                exitProcess(1)
+            }
         }
     }
 
