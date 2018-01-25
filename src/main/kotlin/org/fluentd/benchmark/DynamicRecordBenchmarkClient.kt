@@ -1,13 +1,15 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import org.komamitsu.fluency.Fluency
+import org.slf4j.LoggerFactory
 import java.io.File
-import java.nio.ByteBuffer
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
-import kotlin.coroutines.experimental.buildSequence
 
 class DynamicRecordBenchmarkClient(
         override val host: String,
