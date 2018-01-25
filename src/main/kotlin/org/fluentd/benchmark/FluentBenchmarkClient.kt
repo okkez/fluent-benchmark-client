@@ -129,6 +129,9 @@ class FluentBenchmarkClient: Runnable {
             ])
     private var _reportInterval: Long = 1
 
+    @Option(names = ["-N", "--dry-run"], description = ["Dry run"])
+    private var _dryRunRequested: Boolean = false
+
     @Option(names = ["-h", "--help"], usageHelp = true, description = ["Print this help and exit"])
     private var _helpRequested: Boolean = false
 
@@ -169,6 +172,10 @@ class FluentBenchmarkClient: Runnable {
             port = _port
             fluencyConfig = buildFluencyConfig()
             benchmarkConfig { benchmarkConfig }
+        }
+        if (_dryRunRequested) {
+            client.stop()
+            return@runBlocking
         }
         try {
             client.run()
