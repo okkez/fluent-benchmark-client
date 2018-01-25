@@ -17,6 +17,10 @@ class DynamicRecordBenchmarkClient(
         override val fluencyConfig: Fluency.Config,
         override val config: BenchmarkConfig): BenchmarkClient {
 
+    companion object {
+        val log = LoggerFactory.getLogger(this::class.java.enclosingClass)!!
+    }
+
     override val fluency: Fluency = Fluency.defaultFluency(host, port, fluencyConfig)
     override lateinit var mainJob: Job
     override lateinit var statistics: SendChannel<Statistics.Recorder>
@@ -27,7 +31,7 @@ class DynamicRecordBenchmarkClient(
 
     override fun run() = runBlocking {
         prepareRecords()
-        println(records.size)
+        log.info("Prepare {} records", records.size)
         super.run()
     }
 
