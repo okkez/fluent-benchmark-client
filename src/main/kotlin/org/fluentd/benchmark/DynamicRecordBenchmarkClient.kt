@@ -22,7 +22,7 @@ class DynamicRecordBenchmarkClient(
     }
 
     override val fluency: Fluency = Fluency.defaultFluency(host, port, fluencyConfig)
-    override lateinit var mainJob: Job
+    override var mainJob: Job? = null
     override lateinit var statistics: SendChannel<Statistics.Recorder>
     override val eventCounter: AtomicLong = AtomicLong()
 

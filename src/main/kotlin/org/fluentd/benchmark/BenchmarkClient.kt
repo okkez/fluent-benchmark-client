@@ -35,7 +35,7 @@ interface BenchmarkClient {
     val fluencyConfig: Fluency.Config
     val config: BenchmarkConfig
     val fluency: Fluency // = Fluency.defaultFluency(host, port, fluencyConfig)
-    var mainJob: Job
+    var mainJob: Job?
     var statistics: SendChannel<Statistics.Recorder>
     val eventCounter: AtomicLong
 
@@ -89,9 +89,9 @@ interface BenchmarkClient {
         reporter.run()
         if (config.period != null && config.period!! > 0 && config.mode == Mode.FLOOD) {
             delay(config.period!!, TimeUnit.SECONDS)
-            mainJob.cancel()
+            mainJob!!.cancel()
         }
-        mainJob.join()
+        mainJob!!.join()
         reporter.stop()
     }
 
@@ -132,8 +132,8 @@ interface BenchmarkClient {
     }
 
     fun stop() {
-        if (mainJob.isActive) {
-            mainJob.cancel()
+        if (mainJob != null && mainJob!!.isActive) {
+            mainJob!!.cancel()
         }
         if (!fluency.isTerminated) {
             fluency.close()
