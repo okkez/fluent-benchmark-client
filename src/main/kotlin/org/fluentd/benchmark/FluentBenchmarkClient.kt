@@ -74,7 +74,7 @@ class FluentBenchmarkClient: Runnable {
                 "e.g: 3s, 3m, 1h. Default is seconds.",
                 "conflict with --period"
             ])
-    private var _fixedInterval: Int? = null
+    private var _fixedInterval: Long? = null
 
     @Option(names = ["--period"], paramLabel = "PERIOD",
             converter = [TimeTypeConverter::class],
