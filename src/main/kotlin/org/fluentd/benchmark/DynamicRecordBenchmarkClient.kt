@@ -44,8 +44,18 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsInInterval(interval: Long): Job {
-        return launch {
+    override suspend fun emitEventsInInterval(interval: Long): Job = launch {
+        if (config.nEvents != null && config.nEvents < 1000) {
+            while (isActive) {
+                records.forEach {
+                    emitEvent(it)
+                    delay(interval, TimeUnit.MICROSECONDS)
+                    if (config.nEvents <= eventCounter.get()) {
+                        return@launch
+                    }
+                }
+            }
+        } else {
             var start = System.currentTimeMillis()
             while (isActive) {
                 records.forEach {
