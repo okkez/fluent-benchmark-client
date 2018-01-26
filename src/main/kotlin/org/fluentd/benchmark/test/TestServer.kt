@@ -5,18 +5,27 @@ import influent.forward.ForwardServer
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.withTimeout
+import java.net.ServerSocket
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
-class TestServer {
+class TestServer(port: Int = 24224) {
+
+    companion object {
+        fun unusedPort(): Int {
+            return ServerSocket(0).use {
+                return@use  it.localPort
+            }
+        }
+    }
 
     private val callback = ForwardCallback.of { stream ->
         counter.addAndGet(stream.entries.size.toLong())
         return@of CompletableFuture.completedFuture(null)
     }
     private val builder = ForwardServer.Builder(callback)
-    private val server = builder.build()
+    private val server = builder.localAddress(port).build()
     private val counter = AtomicLong(0)
     private var isRunning = false
 

@@ -28,8 +28,9 @@ object FixedRecordBenchmarkClientSpec: Spek({
                 reportInterval = 200 // msec
 
             }
-            val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
-            val server = TestServer()
+            val port = TestServer.unusedPort()
+            val client = FixedRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
+            val server = TestServer(port)
             it("processes a lot of events") {
                 server.run {
                     client.run()
@@ -56,8 +57,9 @@ object FixedRecordBenchmarkClientSpec: Spek({
                 reportInterval = 200 // msec
 
             }
-            val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
-            val server = TestServer()
+            val port = TestServer.unusedPort()
+            val client = FixedRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
+            val server = TestServer(port)
             it("processes 10000 events") {
                 server.run(10000L) {
                     client.run()
@@ -83,8 +85,9 @@ object FixedRecordBenchmarkClientSpec: Spek({
                 reportInterval = 200 // msec
 
             }
-            val client = FixedRecordBenchmarkClient("127.0.0.1", 24224, fluencyConfig, benchmarkConfig)
-            val server = TestServer()
+            val port = TestServer.unusedPort()
+            val client = FixedRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
+            val server = TestServer(port)
             it("processes 3 events") {
                 server.run(3L) {
                     client.run()
