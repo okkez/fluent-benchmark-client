@@ -46,10 +46,18 @@ class DynamicRecordBenchmarkClient(
 
     override suspend fun emitEventsInInterval(interval: Long): Job {
         return launch {
+            var start = System.currentTimeMillis()
             while (isActive) {
                 records.forEach {
                     emitEvent(it)
-                    delay(interval, TimeUnit.MICROSECONDS)
+                    if (eventCounter.get().rem(config.nEvents / 100) == 0L) {
+                        val elapsed = (System.currentTimeMillis() - start) * 1000
+                        val diff = interval * (config.nEvents / 100) - elapsed
+                        if (diff > 0) {
+                            delay(diff, TimeUnit.MICROSECONDS)
+                        }
+                        start = System.currentTimeMillis()
+                    }
                     if (config.nEvents <= eventCounter.get()) {
                         return@launch
                     }

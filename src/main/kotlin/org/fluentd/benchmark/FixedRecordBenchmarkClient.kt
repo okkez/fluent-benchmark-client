@@ -25,9 +25,17 @@ class FixedRecordBenchmarkClient(
      * @param interval The intervals in microseconds
      */
     override suspend fun emitEventsInInterval(interval: Long): Job = launch {
+        var start = System.currentTimeMillis()
         repeat(config.nEvents) {
             emitEvent(record)
-            delay(interval, TimeUnit.MICROSECONDS)
+            if (it.rem(config.nEvents / 100) == 0) {
+                val elapsed = (System.currentTimeMillis() - start) * 1000
+                val diff = interval * (config.nEvents / 100) - elapsed
+                if (diff > 0) {
+                    delay(diff, TimeUnit.MICROSECONDS)
+                }
+                start = System.currentTimeMillis()
+            }
         }
         statistics.send(Statistics.Recorder.Finish)
         fluency.close()
