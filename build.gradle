@@ -45,13 +45,13 @@ applicationDistribution.from("config/log4j.properties") {
 }
 
 shadowDistTar {
-    from("config/log4j.properties") {
+    from("config/log4j2.yaml") {
         into("${archiveName.replaceAll(".$extension", "")}/config/")
     }
 }
 
 shadowDistZip {
-    from("config/log4j.properties") {
+    from("config/log4j2.yaml") {
         into("${archiveName.replaceAll(".$extension", "")}/config/")
     }
 }
