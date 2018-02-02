@@ -45,7 +45,7 @@ class DynamicRecordBenchmarkClient(
     }
 
     override suspend fun emitEventsInInterval(interval: Long): Job = launch {
-        if (config.nEvents != null && config.nEvents < 1000) {
+        if (config.nEvents < 1000) {
             while (isActive) {
                 records.forEach {
                     emitEvent(it)
