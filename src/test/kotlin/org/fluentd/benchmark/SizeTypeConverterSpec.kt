@@ -17,7 +17,8 @@ object SizeTypeConverterSpec: Spek({
                 data("1m", expected = 1048576L),
                 data("5M", expected = 5242880L),
                 data("1g", expected = 1073741824L),
-                data("5G", expected = 5368709120L)
+                data("5G", expected = 5368709120L),
+                data("10", expected = 10L)
         ) { value: String, expected: Number ->
             val converter = SizeTypeConverter()
             it("returns $expected") {

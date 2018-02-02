@@ -7,7 +7,7 @@ class SizeTypeConverter: CommandLine.ITypeConverter<Number> {
         if (value.isNullOrEmpty()) {
             return 0
         }
-        val pattern = Regex("""\A(\d+)([kKmMgG])\z""")
+        val pattern = Regex("""\A(\d+)([kKmMgG])?\z""")
         val m = pattern.matchEntire(value!!)
         if (m != null) {
             val digit = m.groupValues[1].toLong()

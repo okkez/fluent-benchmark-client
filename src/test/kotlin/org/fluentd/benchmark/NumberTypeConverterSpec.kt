@@ -16,7 +16,8 @@ object NumberTypeConverterSpec: Spek({
                 data("1m", expected = 1000000L),
                 data("5M", expected = 5000000L),
                 data("1g", expected = 1000000000L),
-                data("5G", expected = 5000000000L)
+                data("5G", expected = 5000000000L),
+                data("1000", expected = 1000L)
         ) { value: String, expected: Number ->
             val converter = NumberTypeConverter()
             it("returns $expected") {
