@@ -84,10 +84,13 @@ class FixedRecordBenchmarkClient(
     }
 
     override suspend fun emitEventsInFlood(): Job = launch {
-        while (isActive) {
-            emitEvent(record)
+        try {
+            while (isActive) {
+                emitEvent(record)
+            }
+        } finally {
+            statistics.send(Statistics.Recorder.Finish)
+            fluency.close()
         }
-        statistics.send(Statistics.Recorder.Finish)
-        fluency.close()
     }
 }

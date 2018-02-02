@@ -108,8 +108,8 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsInFlood(): Job {
-        return launch {
+    override suspend fun emitEventsInFlood(): Job = launch {
+        try {
             while (isActive) {
                 records.forEach {
                     emitEvent(it)
@@ -117,8 +117,8 @@ class DynamicRecordBenchmarkClient(
                         return@forEach
                     }
                 }
-
             }
+        } finally {
             statistics.send(Statistics.Recorder.Finish)
             fluency.close()
         }
