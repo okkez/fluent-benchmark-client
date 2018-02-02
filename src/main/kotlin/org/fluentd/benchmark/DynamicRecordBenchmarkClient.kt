@@ -81,7 +81,7 @@ class DynamicRecordBenchmarkClient(
         var start = System.currentTimeMillis()
         var interval = TimeUnit.SECONDS.toMicros(1) / config.nEventsPerSec!!
         var needInterval = true
-        try {
+        fluency.use { _ ->
             while (isActive) {
                 records.forEach { record ->
                     emitEvent(record)
@@ -103,8 +103,6 @@ class DynamicRecordBenchmarkClient(
                     }
                 }
             }
-        } finally {
-            fluency.close()
         }
     }
 

@@ -58,7 +58,7 @@ class FixedRecordBenchmarkClient(
         var start = System.currentTimeMillis()
         var interval = TimeUnit.SECONDS.toMicros(1) / config.nEventsPerSec!!
         var needInterval = true
-        try {
+        fluency.use { _ ->
             while (isActive) {
                 emitEvent(record)
                 if (eventCounter.get().rem(config.nEventsPerSec / 10) == 0L) {
@@ -78,8 +78,6 @@ class FixedRecordBenchmarkClient(
                     }
                 }
             }
-        } finally {
-            fluency.close()
         }
     }
 
