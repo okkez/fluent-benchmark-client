@@ -65,8 +65,10 @@ class FluentBenchmarkClient: Runnable {
     private var _flushInterval: Int? = null
 
     // Load options
-    @Option(names = ["--n-events"], paramLabel = "N", description = ["Emit N events (1000)"])
-    private var _nEvents: Int = 1000
+    @Option(names = ["--n-events"], paramLabel = "N",
+            converter = [NumberTypeConverter::class],
+            description = ["Emit N events (1000)"])
+    private var _nEvents: Long = 1000L
 
     @Option(names = ["--interval"], paramLabel = "INTERVAL",
             converter = [TimeTypeConverter::class],

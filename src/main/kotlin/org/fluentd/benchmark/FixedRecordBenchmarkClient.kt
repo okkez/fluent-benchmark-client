@@ -27,7 +27,7 @@ class FixedRecordBenchmarkClient(
     override suspend fun emitEventsInInterval(interval: Long): Job = launch {
         when {
             config.nEvents < 1000 -> {
-                repeat(config.nEvents) {
+                for (i in 1L..config.nEvents) {
                     emitEvent(record)
                     delay(interval, TimeUnit.MICROSECONDS)
                 }
@@ -36,9 +36,9 @@ class FixedRecordBenchmarkClient(
             }
             else -> {
                 var start = System.currentTimeMillis()
-                repeat(config.nEvents) {
+                for (i in 1L..config.nEvents) {
                     emitEvent(record)
-                    if (it.rem(config.nEvents / 100) == 0) {
+                    if (i.rem(config.nEvents / 100) == 0L) {
                         val elapsed = (System.currentTimeMillis() - start) * 1000
                         val diff = interval * (config.nEvents / 100) - elapsed
                         if (diff > 0) {
