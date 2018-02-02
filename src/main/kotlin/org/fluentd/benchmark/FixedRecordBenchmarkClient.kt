@@ -37,15 +37,26 @@ class FixedRecordBenchmarkClient(
             }
             else -> {
                 var start = System.currentTimeMillis()
+                var newInterval = interval
+                val nEventsPerSec = ((1.0 / interval) * TimeUnit.SECONDS.toMicros(1)).toLong()
+                var needInterval = true
                 for (i in 1L..config.nEvents) {
                     emitEvent(record)
-                    if (i.rem(config.nEvents / 100) == 0L) {
-                        val elapsed = (System.currentTimeMillis() - start) * 1000
-                        val diff = interval * (config.nEvents / 100) - elapsed
+                    if (i.rem(nEventsPerSec / 10) == 0L) {
+                        val elapsedInMicros = (System.currentTimeMillis() - start) * 1000L
+                        val diff = TimeUnit.MILLISECONDS.toMicros(100) - elapsedInMicros
                         if (diff > 0) {
                             delay(diff, TimeUnit.MICROSECONDS)
+                            needInterval = true
+                        } else {
+                            newInterval = (newInterval * 0.9).toLong()
+                            needInterval = false
                         }
                         start = System.currentTimeMillis()
+                    } else {
+                        if (needInterval) {
+                            delay(newInterval, TimeUnit.MICROSECONDS)
+                        }
                     }
                 }
                 statistics.send(Statistics.Recorder.Finish)
@@ -62,8 +73,8 @@ class FixedRecordBenchmarkClient(
             while (isActive) {
                 emitEvent(record)
                 if (eventCounter.get().rem(config.nEventsPerSec / 10) == 0L) {
-                    val elapsed = (System.currentTimeMillis() - start) * 1000L
-                    val diff = TimeUnit.MILLISECONDS.toMicros(100) - elapsed
+                    val elapsedInMicros = (System.currentTimeMillis() - start) * 1000L
+                    val diff = TimeUnit.MILLISECONDS.toMicros(100) - elapsedInMicros
                     if (diff > 0) {
                         delay(diff, TimeUnit.MICROSECONDS)
                         needInterval = true
