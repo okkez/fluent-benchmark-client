@@ -70,6 +70,15 @@ class FluentBenchmarkClient: Runnable {
             description = ["Emit N events (1000)"])
     private var _nEvents: Long = 1000L
 
+    @Option(names = ["--n-events-per-sec"], paramLabel = "N",
+            converter = [NumberTypeConverter::class],
+            description = [
+                "Emit N events in a second",
+                "use this option with --period",
+                "conflict with --flood, --interval, --n-events"
+            ])
+    private var _nEventsPerSec: Long? = null
+
     @Option(names = ["--interval"], paramLabel = "INTERVAL",
             converter = [TimeTypeConverter::class],
             description = [
@@ -145,7 +154,8 @@ class FluentBenchmarkClient: Runnable {
         validateCommandLineArguments()
         val benchmarkMode = when {
             _fixedInterval != null -> BenchmarkClient.Mode.FIXED_INTERVAL
-            _fixedPeriod != null -> BenchmarkClient.Mode.FIXED_PERIOD
+            _fixedPeriod != null && _nEventsPerSec == null -> BenchmarkClient.Mode.FIXED_PERIOD
+            _fixedPeriod != null && _nEventsPerSec != null -> BenchmarkClient.Mode.EVENTS_PER_SEC
             _flood != null -> BenchmarkClient.Mode.FLOOD
             else -> BenchmarkClient.Mode.FLOOD
         }
@@ -154,10 +164,12 @@ class FluentBenchmarkClient: Runnable {
             tag = _tag
             timestampType = _timestampType
             nEvents = _nEvents
+            nEventsPerSec = _nEventsPerSec
             interval = _fixedInterval
             period {
                 when (benchmarkMode) {
                     BenchmarkClient.Mode.FIXED_PERIOD -> _fixedPeriod
+                    BenchmarkClient.Mode.EVENTS_PER_SEC -> _fixedPeriod
                     BenchmarkClient.Mode.FLOOD -> _flood
                     else -> null
                 }
@@ -221,6 +233,9 @@ class FluentBenchmarkClient: Runnable {
         }
         if (_flood != null && (_fixedInterval != null || _fixedPeriod != null)) {
             throw ArgumentException("--flood conflict with --interval and --period")
+        }
+        if (_nEventsPerSec != null && (_flood != null || _fixedInterval != null || _nEvents != 1000L)) {
+            throw ArgumentException("--n-events-per-sec conflict with --flood, --interval and --n-events")
         }
         if (_inputFilePath != null && (_recordKey != DEFAULT_RECORD_KEY || _recordValue != DEFAULT_RECORD_VALUE)) {
             throw ArgumentException("--input-file-path conflict with --record-key and --record-value")

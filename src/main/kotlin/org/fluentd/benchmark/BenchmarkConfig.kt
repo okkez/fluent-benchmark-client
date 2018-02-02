@@ -8,6 +8,7 @@ import java.nio.ByteBuffer
 class BenchmarkConfig(val tag: String,
                       val timestampType: BenchmarkClient.TimestampType,
                       val nEvents: Long,
+                      val nEventsPerSec: Long?,
                       val interval: Long?,
                       val period: Long?,
                       val recordKey: String,
@@ -21,6 +22,7 @@ class BenchmarkConfig(val tag: String,
             builder.tag,
             builder.timestampType,
             builder.nEvents,
+            builder.nEventsPerSec,
             builder.interval,
             builder.period,
             builder.recordKey,
@@ -61,6 +63,7 @@ class BenchmarkConfig(val tag: String,
         lateinit var tag: String
         var timestampType = BenchmarkClient.TimestampType.EventTime
         var nEvents: Long = 10000L
+        var nEventsPerSec: Long? = null
         var interval: Long? = null
         var period: Long? = null
         lateinit var recordKey: String
@@ -75,6 +78,8 @@ class BenchmarkConfig(val tag: String,
         fun timestampType(init: Builder.() -> BenchmarkClient.TimestampType) = apply { timestampType = init() }
 
         fun nEvents(init: Builder.() -> Long) = apply { nEvents = init() }
+
+        fun nEventsPerSec(init: Builder.() -> Long?) = apply { nEventsPerSec = init() }
 
         fun interval(init: Builder.() -> Long?) = apply { interval = init() }
 

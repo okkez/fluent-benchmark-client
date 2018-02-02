@@ -95,5 +95,33 @@ object DynamicRecordBenchmarkClientSpec: Spek({
                 assertEquals(3L, server.processedEvents())
             }
         }
+        on("runs in N events per second mode, processes 2000 events") {
+            val fluencyConfig = Fluency.Config()
+            fluencyConfig.flushIntervalMillis = 100
+            val benchmarkConfig = BenchmarkConfig.create {
+                tag = "test.tag"
+                timestampType = BenchmarkClient.TimestampType.EventTime
+                nEventsPerSec = 1000L
+                interval = null
+                period = 2 // sec
+                recordKey = "message"
+                recordValue = "This is test message."
+                inputFileFormat = BenchmarkClient.FileFormat.LTSV
+                inputFilePath = javaClass.classLoader.getResource("dummy.ltsv").path
+                mode = BenchmarkClient.Mode.EVENTS_PER_SEC
+                reportInterval = 200 // msec
+
+            }
+            val port = TestServer.unusedPort()
+            val client = DynamicRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
+            val server = TestServer(port)
+            it("processes 2000 events") {
+                server.run(2000L) {
+                    client.run()
+                }
+                assertEquals(2000L, client.eventCounter.get())
+                assertEquals(2000L, server.processedEvents())
+            }
+        }
     }
 })

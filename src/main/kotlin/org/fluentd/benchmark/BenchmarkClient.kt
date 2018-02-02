@@ -16,6 +16,7 @@ interface BenchmarkClient {
     enum class Mode {
         FIXED_INTERVAL,
         FIXED_PERIOD,
+        EVENTS_PER_SEC,
         FLOOD,
     }
 
@@ -83,12 +84,26 @@ interface BenchmarkClient {
                 }
             }
             Mode.FIXED_PERIOD -> emitEventsInPeriod()
+            Mode.EVENTS_PER_SEC -> emitEventsPerSec()
             Mode.FLOOD -> emitEventsInFlood()
         }
         reporter.run()
-        if (config.period != null && config.period!! > 0 && config.mode == Mode.FLOOD) {
-            delay(config.period!!, TimeUnit.SECONDS)
-            mainJob!!.cancel()
+        if (config.period != null && config.period!! > 0) {
+            when (config.mode) {
+                Mode.FLOOD -> {
+                    delay(config.period!!, TimeUnit.SECONDS)
+                    mainJob!!.cancel()
+                }
+                Mode.EVENTS_PER_SEC -> {
+                    delay(config.period!!, TimeUnit.SECONDS)
+                    val expected = config.period!! * config.nEventsPerSec!!
+                    while (expected > eventCounter.get()) {
+                        delay(10, TimeUnit.MICROSECONDS)
+                    }
+                    mainJob!!.cancel()
+                }
+                else -> Unit
+            }
         }
         mainJob!!.join()
         reporter.stop()
@@ -96,6 +111,7 @@ interface BenchmarkClient {
 
     suspend fun emitEventsInInterval(interval: Long = TimeUnit.SECONDS.toMicros(1)): Job
     suspend fun emitEventsInFlood(): Job
+    suspend fun emitEventsPerSec(): Job
     suspend fun emitEventsInPeriod(): Job {
         return when {
             config.period != null && config.period!! > 0 -> {

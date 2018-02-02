@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import org.komamitsu.fluency.Fluency
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
@@ -50,6 +51,35 @@ class FixedRecordBenchmarkClient(
                 statistics.send(Statistics.Recorder.Finish)
                 fluency.close()
             }
+        }
+    }
+
+    override suspend fun emitEventsPerSec(): Job = launch {
+        var start = System.currentTimeMillis()
+        var interval = TimeUnit.SECONDS.toMicros(1) / config.nEventsPerSec!!
+        var needInterval = true
+        try {
+            while (isActive) {
+                emitEvent(record)
+                if (eventCounter.get().rem(config.nEventsPerSec / 10) == 0L) {
+                    val elapsed = (System.currentTimeMillis() - start) * 1000L
+                    val diff = TimeUnit.MILLISECONDS.toMicros(100) - elapsed
+                    if (diff > 0) {
+                        delay(diff, TimeUnit.MICROSECONDS)
+                        needInterval = true
+                    } else {
+                        interval = (interval * 0.9).toLong()
+                        needInterval = false
+                    }
+                    start = System.currentTimeMillis()
+                } else {
+                    if (needInterval) {
+                        delay(interval, TimeUnit.MICROSECONDS)
+                    }
+                }
+            }
+        } finally {
+            fluency.close()
         }
     }
 
