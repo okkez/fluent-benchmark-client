@@ -57,19 +57,29 @@ class DynamicRecordBenchmarkClient(
             }
         } else {
             var start = System.currentTimeMillis()
+            var newInterval = interval
+            val nEventsPerSec = ((1.0 / interval) * TimeUnit.SECONDS.toMicros(1)).toLong()
+            var needInterval = true
             while (isActive) {
                 records.forEach {
                     emitEvent(it)
-                    if (eventCounter.get().rem(config.nEvents / 100) == 0L) {
-                        val elapsed = (System.currentTimeMillis() - start) * 1000
-                        val diff = interval * (config.nEvents / 100) - elapsed
+                    if (eventCounter.get().rem(nEventsPerSec / 10) == 0L) {
+                        val elapsedInMicros = (System.currentTimeMillis() - start) * 1000
+                        val diff = TimeUnit.MILLISECONDS.toMicros(100) - elapsedInMicros
                         if (diff > 0) {
                             delay(diff, TimeUnit.MICROSECONDS)
+                            needInterval = true
+                        } else {
+                            newInterval = (newInterval * 0.9).toLong()
+                            needInterval = false
                         }
                         start = System.currentTimeMillis()
                     }
                     if (config.nEvents <= eventCounter.get()) {
                         return@launch
+                    }
+                    if (needInterval) {
+                        delay(newInterval, TimeUnit.MICROSECONDS)
                     }
                 }
             }
