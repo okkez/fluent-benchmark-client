@@ -38,9 +38,9 @@ group 'org.fluentd'
 version '1.0-SNAPSHOT'
 
 mainClassName = "org.fluentd.benchmark.FluentBenchmarkClient"
-applicationDefaultJvmArgs = ['-Dlog4j.configuration=APP_LOG_BASE/config/log4j.properties']
+applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=APP_LOG_BASE/config/log4j2.yaml']
 
-applicationDistribution.from("config/log4j.properties") {
+applicationDistribution.from("config/log4j2.yaml") {
     into("config/")
 }
 
