@@ -1,10 +1,7 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 import java.util.concurrent.TimeUnit
@@ -97,8 +94,10 @@ interface BenchmarkClient {
                 Mode.EVENTS_PER_SEC -> {
                     delay(config.period!!, TimeUnit.SECONDS)
                     val expected = config.period!! * config.nEventsPerSec!!
-                    while (expected > eventCounter.get()) {
-                        delay(10, TimeUnit.MICROSECONDS)
+                    withTimeoutOrNull(10, TimeUnit.SECONDS) {
+                        while (expected > eventCounter.get()) {
+                            delay(10, TimeUnit.MICROSECONDS)
+                        }
                     }
                     mainJob!!.cancel()
                 }
