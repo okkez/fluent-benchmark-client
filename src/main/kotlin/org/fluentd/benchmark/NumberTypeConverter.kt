@@ -17,7 +17,12 @@ class NumberTypeConverter: CommandLine.ITypeConverter<Number> {
                 "g", "G" -> 1000 * 1000 * 1000
                 else -> 1
             }
-            return digit * unit
+            val result = digit * unit
+            return if (Int.MAX_VALUE < result) {
+                result
+            } else {
+                result.toInt()
+            }
         }
 
         return 0

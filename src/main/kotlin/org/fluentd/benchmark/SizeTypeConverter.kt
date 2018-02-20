@@ -17,7 +17,12 @@ class SizeTypeConverter: CommandLine.ITypeConverter<Number> {
                 "g", "G" -> 1024 * 1024 * 1024
                 else -> 1
             }
-            return digit * unit
+            val result = digit * unit
+            return if (Int.MAX_VALUE < result) {
+                result
+            } else {
+                result.toInt()
+            }
         }
 
         return 0
