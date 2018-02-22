@@ -14,6 +14,7 @@ plugins {
     id "application"
     id "com.github.johnrengelman.shadow" version "2.0.2"
     // id "org.junit.platform.gradle.plugin"
+    id "org.ajoberstar.grgit" version "1.7.2"
 }
 
 
@@ -124,4 +125,19 @@ startShadowScripts {
 
 jar.manifest {
     attributes "Manifest-Version": version, "Implementation-Title": "fluent-benchmark-client"
+}
+
+task createTag {
+    doLast {
+        grgit.tag.add(name: "v$version")
+    }
+}
+
+task pushTag {
+    doLast {
+        grgit.push {
+            tags = true
+            dryRun = isDevBuild
+        }
+    }
 }
