@@ -12,7 +12,8 @@ import kotlin.system.exitProcess
 @Command(name = "fluent-benchmark-client", version = ["1.0.0"],
         sortOptions = false, abbreviateSynopsis = true,
         optionListHeading = "%nOptions:%n",
-        description = ["Benchmark client for Fluentd"])
+        description = ["Benchmark client for Fluentd"],
+        versionProvider = ManifestVersionProvider::class)
 class FluentBenchmarkClient: Runnable {
 
     @Option(names = ["-H", "--host"], paramLabel = "HOST",
