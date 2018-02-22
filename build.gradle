@@ -34,8 +34,18 @@ junitPlatform {
     }
 }
 
+def isDevBuild
+def isReleaseBuild
+
 group 'org.fluentd'
-version '1.0-SNAPSHOT'
+version '0.5.0'
+
+if (hasProperty("release")) {
+    isReleaseBuild = true
+} else {
+    isDevBuild = true
+    version += "-SNAPSHOT"
+}
 
 mainClassName = "org.fluentd.benchmark.FluentBenchmarkClient"
 applicationDefaultJvmArgs = ['-Dlog4j.configurationFile=APP_LOG_BASE/config/log4j2.yaml']
@@ -110,4 +120,8 @@ startShadowScripts {
         unixScript.text = unixScript.text.replaceAll("APP_LOG_BASE", '\\$APP_HOME')
         windowsScript.text = windowsScript.text.replaceAll("APP_LOG_BASE", "%APP_HOME%")
     }
+}
+
+jar.manifest {
+    attributes "Manifest-Version": version, "Implementation-Title": "fluent-benchmark-client"
 }
