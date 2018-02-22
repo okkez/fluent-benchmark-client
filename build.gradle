@@ -35,8 +35,8 @@ junitPlatform {
     }
 }
 
-def isDevBuild
-def isReleaseBuild
+def isDevBuild = false
+def isReleaseBuild = false
 
 group 'org.fluentd'
 version '0.5.0'
