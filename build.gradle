@@ -128,12 +128,14 @@ jar.manifest {
 }
 
 task createTag {
+    description = "Create tag v$version"
     doLast {
         grgit.tag.add(name: "v$version")
     }
 }
 
 task pushTag {
+    description = "Push tags to remote if release build"
     doLast {
         grgit.push {
             tags = true
