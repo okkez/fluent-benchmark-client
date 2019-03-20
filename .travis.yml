@@ -2,10 +2,8 @@ language: java
 sudo: false
 
 jdk:
-  - openjdk8
-  #- openjdk9
-  - oraclejdk8
-  #- oraclejdk9
+  - openjdk11
+  - oraclejdk11
 
 script:
   - ./gradlew test
