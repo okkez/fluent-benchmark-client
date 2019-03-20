@@ -1,7 +1,7 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.SendChannel
 import org.komamitsu.fluency.EventTime
 import org.komamitsu.fluency.Fluency
 import java.util.concurrent.TimeUnit
@@ -88,15 +88,15 @@ interface BenchmarkClient {
         if (config.period != null && config.period!! > 0) {
             when (config.mode) {
                 Mode.FLOOD -> {
-                    delay(config.period!!, TimeUnit.SECONDS)
+                    delay(TimeUnit.SECONDS.toMillis(config.period!!))
                     mainJob!!.cancel()
                 }
                 Mode.EVENTS_PER_SEC -> {
-                    delay(config.period!!, TimeUnit.SECONDS)
+                    delay(TimeUnit.SECONDS.toMillis(config.period!!))
                     val expected = config.period!! * config.nEventsPerSec!!
-                    withTimeoutOrNull(10, TimeUnit.SECONDS) {
+                    withTimeoutOrNull(TimeUnit.SECONDS.toMillis(10)) {
                         while (expected > eventCounter.get()) {
-                            delay(10, TimeUnit.MICROSECONDS)
+                            delay(TimeUnit.MICROSECONDS.toMillis(10))
                         }
                     }
                     mainJob!!.cancel()

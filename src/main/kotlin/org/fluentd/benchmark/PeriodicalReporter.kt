@@ -1,7 +1,7 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.SendChannel
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicLong
 

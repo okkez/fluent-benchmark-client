@@ -1,7 +1,8 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.CompletableDeferred
-import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.coroutineScope
 import java.time.Instant
 import java.util.concurrent.atomic.AtomicLong
 
@@ -13,13 +14,15 @@ class Statistics(val start: Instant = Instant.now()) {
     }
 
     companion object {
-        fun create() = actor<Statistics.Recorder> {
-            val statistics = Statistics()
-            for (message in channel) {
-                when (message) {
-                    is Statistics.Recorder.Set -> statistics.set(message.count)
-                    is Statistics.Recorder.Get -> message.response.complete(statistics)
-                    is Statistics.Recorder.Finish -> statistics.finish()
+        suspend fun create() = coroutineScope {
+            actor<Statistics.Recorder> {
+                val statistics = Statistics()
+                for (message in channel) {
+                    when (message) {
+                        is Statistics.Recorder.Set -> statistics.set(message.count)
+                        is Statistics.Recorder.Get -> message.response.complete(statistics)
+                        is Statistics.Recorder.Finish -> statistics.finish()
+                    }
                 }
             }
         }

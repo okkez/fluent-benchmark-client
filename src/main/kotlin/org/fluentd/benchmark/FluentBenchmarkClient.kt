@@ -1,6 +1,6 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import org.komamitsu.fluency.Fluency
 import org.slf4j.LoggerFactory
 import picocli.CommandLine

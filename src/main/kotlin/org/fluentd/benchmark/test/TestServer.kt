@@ -2,9 +2,10 @@ package org.fluentd.benchmark.test
 
 import influent.forward.ForwardCallback
 import influent.forward.ForwardServer
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withTimeout
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import java.net.ServerSocket
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -58,12 +59,12 @@ class TestServer(port: Int = 24224) {
     }
 
     fun waitFor(expected: Long, timeout: Long = 10L) = runBlocking {
-        withTimeout(timeout, TimeUnit.SECONDS) {
+        withTimeout(TimeUnit.SECONDS.toMillis(timeout)) {
             while (isActive) {
                 if (expected == counter.get()) {
                     return@withTimeout
                 }
-                delay(1, TimeUnit.MILLISECONDS)
+                delay(1)
             }
         }
     }
