@@ -27,7 +27,7 @@ object PeriodicalReporterSpec: Spek({
                 launch {
                     repeat(10) {
                         counter.incrementAndGet()
-                        delay(TimeUnit.MILLISECONDS.toMillis(10))
+                        delay(10)
                     }
                 }
                 val job = launch {
