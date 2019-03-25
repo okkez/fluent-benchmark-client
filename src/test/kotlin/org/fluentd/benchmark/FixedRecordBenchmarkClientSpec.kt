@@ -6,9 +6,10 @@ import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.komamitsu.fluency.Fluency
+import org.spekframework.spek2.dsl.Skip
 
 object FixedRecordBenchmarkClientSpec: Spek({
-    describe("a benchmark client") {
+    describe("a benchmark client", Skip.Yes()) {
         context("runs in flood mode for 1 second") {
             val fluencyConfig = Fluency.Config()
             fluencyConfig.flushIntervalMillis = 100
