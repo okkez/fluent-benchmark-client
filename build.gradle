@@ -63,7 +63,8 @@ shadowDistZip {
 
 repositories {
     mavenCentral()
-    maven { url "http://dl.bintray.com/jetbrains/spek" }
+    maven { url "https://dl.bintray.com/jetbrains/spek" }
+    maven { url "https://dl.bintray.com/spekframework/spek/" }
 }
 
 dependencies {
@@ -93,6 +94,10 @@ dependencies {
     }
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: "5.0.3"
     testRuntimeOnly group: "org.junit.jupiter", name: "junit-jupiter-engine", version: "5.0.3"
+
+    testImplementation "org.spekframework.spek2:spek-dsl-jvm:2.0.1"
+    testRuntimeOnly "org.spekframework.spek2:spek-runner-junit5:2.0.1"
+    testRuntimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
 compileKotlin {
@@ -103,6 +108,12 @@ compileTestKotlin {
 }
 
 defaultTasks("distTar", "distZip", "shadowdistTar", "shadowdistZip")
+
+test {
+    useJUnitPlatform {
+        includeEngines "spek", "spek2"
+    }
+}
 
 startScripts {
     doLast {
