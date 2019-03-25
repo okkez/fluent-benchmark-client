@@ -6,7 +6,6 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.junit.platform:junit-platform-gradle-plugin:1.0.0"
     }
 }
 
@@ -19,15 +18,6 @@ plugins {
 
 
 apply plugin: "kotlin"
-apply plugin: 'org.junit.platform.gradle.plugin'
-
-junitPlatform {
-    filters {
-        engines {
-            include "spek"
-        }
-    }
-}
 
 def isDevBuild = false
 def isReleaseBuild = false
@@ -101,7 +91,7 @@ defaultTasks("distTar", "distZip", "shadowdistTar", "shadowdistZip")
 
 test {
     useJUnitPlatform {
-        includeEngines "spek", "spek2"
+        includeEngines "spek2"
     }
 }
 
