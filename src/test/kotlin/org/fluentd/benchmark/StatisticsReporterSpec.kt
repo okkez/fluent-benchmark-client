@@ -1,19 +1,17 @@
 package org.fluentd.benchmark
 
 import org.fluentd.benchmark.test.TestAppender
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.util.concurrent.TimeUnit
 
 object StatisticsReporterSpec: Spek({
-    given("StatisticsReporter") {
+    describe("StatisticsReporter") {
         beforeEachTest {
             TestAppender.events.clear()
         }
-        on("report") {
+        context("report") {
             val statistics = Statistics()
             statistics.set(1000)
             TimeUnit.MILLISECONDS.sleep(200L)

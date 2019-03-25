@@ -1,15 +1,13 @@
 package org.fluentd.benchmark
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.msgpack.core.MessagePack
 
 object LTSVParserSpec: Spek({
-    given("a LTSV parser") {
-        on("parse LTSV text") {
+    describe("a LTSV parser") {
+        context("parse LTSV text") {
             val parser = LTSVParser()
             it("returns ByteArray that represents map") {
                 parser.parse("key1:value1\tkey2:value2") {

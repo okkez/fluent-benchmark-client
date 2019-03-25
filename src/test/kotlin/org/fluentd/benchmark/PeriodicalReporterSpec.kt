@@ -4,20 +4,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.fluentd.benchmark.test.TestAppender
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 
 object PeriodicalReporterSpec: Spek({
-    given("periodical reporter") {
+    describe("periodical reporter") {
         beforeEachTest {
             TestAppender.events.clear()
         }
-        on("run in 1sec w/ interval 100ms") {
+        context("run in 1sec w/ interval 100ms") {
             runBlocking {
                 val statistics = Statistics.create()
                 val counter = AtomicLong()
