@@ -106,6 +106,7 @@ interface BenchmarkClient {
         }
         mainJob!!.join()
         reporter.stop()
+        statistics.close()
     }
 
     suspend fun emitEventsInInterval(interval: Long = TimeUnit.SECONDS.toMicros(1)): Job

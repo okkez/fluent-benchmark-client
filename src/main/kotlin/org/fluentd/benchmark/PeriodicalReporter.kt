@@ -17,7 +17,7 @@ class PeriodicalReporter(private val statistics: SendChannel<Statistics.Recorder
     private var previous: Long = 0
 
     fun run() = runBlocking {
-        job = launch {
+        job = CoroutineScope(coroutineContext + SupervisorJob()).launch {
             while (isActive) {
                 val response = CompletableDeferred<Statistics>()
                 statistics.send(Statistics.Recorder.Set(eventCounter.get()))
