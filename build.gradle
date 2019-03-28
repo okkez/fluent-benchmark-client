@@ -93,6 +93,7 @@ test {
     useJUnitPlatform {
         includeEngines "spek2"
     }
+    testLogging.showStandardStreams = true
 }
 
 startScripts {
