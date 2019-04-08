@@ -1,45 +1,42 @@
 package org.fluentd.benchmark
 
 import org.fluentd.benchmark.test.TestServer
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.komamitsu.fluency.Fluency
 
 object DynamicRecordBenchmarkClientSpec: Spek({
-    given("a benchmark client") {
-        on("runs in flood mode in 1 second") {
-            val fluencyConfig = Fluency.Config()
-            fluencyConfig.flushIntervalMillis = 100
-            val benchmarkConfig = BenchmarkConfig.create {
-                tag = "test.tag"
-                timestampType = BenchmarkClient.TimestampType.EventTime
-                nEvents = 10000
-                interval = null
-                period = 1 // sec
-                recordKey = "message"
-                recordValue = "This is test message."
-                inputFileFormat = BenchmarkClient.FileFormat.LTSV
-                inputFilePath = javaClass.classLoader.getResource("dummy.ltsv").path
-                mode = BenchmarkClient.Mode.FLOOD
-                reportInterval = 200 // msec
-            }
-            val port = TestServer.unusedPort()
-            val client = DynamicRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
-            val server = TestServer(port)
-            it("processes a lot of events") {
-                server.run {
-                    client.run()
-                }
-                assertTrue(server.processedEvents() > 0L)
-                assertTrue(client.eventCounter.get() > 0L)
-                assertEquals(server.processedEvents(), client.eventCounter.get())
-            }
-        }
-        on("runs in fixed period mode, processes 10000 events in 1 second") {
+    describe("a benchmark client") {
+//        context("runs in flood mode in 1 second") {
+//            val fluencyConfig = Fluency.Config()
+//            fluencyConfig.flushIntervalMillis = 100
+//            val benchmarkConfig = BenchmarkConfig.create {
+//                tag = "test.tag"
+//                timestampType = BenchmarkClient.TimestampType.EventTime
+//                nEvents = 10000
+//                interval = null
+//                period = 1 // sec
+//                recordKey = "message"
+//                recordValue = "This is test message."
+//                inputFileFormat = BenchmarkClient.FileFormat.LTSV
+//                inputFilePath = javaClass.classLoader.getResource("dummy.ltsv").path
+//                mode = BenchmarkClient.Mode.FLOOD
+//                reportInterval = 200 // msec
+//            }
+//            val port = TestServer.unusedPort()
+//            val client = DynamicRecordBenchmarkClient("127.0.0.1", port, fluencyConfig, benchmarkConfig)
+//            val server = TestServer(port)
+//            it("processes a lot of events") {
+//                server.run {
+//                    client.run()
+//                }
+//                assertTrue(server.processedEvents() > 0L)
+//                assertTrue(client.eventCounter.get() > 0L)
+//                assertEquals(server.processedEvents(), client.eventCounter.get())
+//            }
+//        }
+        context("runs in fixed period mode, processes 10000 events in 1 second") {
             val fluencyConfig = Fluency.Config()
             fluencyConfig.flushIntervalMillis = 100
             val benchmarkConfig = BenchmarkConfig.create {
@@ -65,9 +62,10 @@ object DynamicRecordBenchmarkClientSpec: Spek({
                 }
                 assertEquals(10000L, client.eventCounter.get())
                 assertEquals(10000L, server.processedEvents())
+                client.stop()
             }
         }
-        on("runs in fixed interval mode, processes 3 events") {
+        context("runs in fixed interval mode, processes 3 events") {
             val fluencyConfig = Fluency.Config()
             fluencyConfig.flushIntervalMillis = 100
             val benchmarkConfig = BenchmarkConfig.create {
@@ -93,9 +91,10 @@ object DynamicRecordBenchmarkClientSpec: Spek({
                 }
                 assertEquals(3L, client.eventCounter.get())
                 assertEquals(3L, server.processedEvents())
+                client.stop()
             }
         }
-        on("runs in N events per second mode, processes 2000 events") {
+        context("runs in N events per second mode, processes 2000 events") {
             val fluencyConfig = Fluency.Config()
             fluencyConfig.flushIntervalMillis = 100
             val benchmarkConfig = BenchmarkConfig.create {
@@ -121,6 +120,7 @@ object DynamicRecordBenchmarkClientSpec: Spek({
                 }
                 assertEquals(2000L, client.eventCounter.get())
                 assertEquals(2000L, server.processedEvents())
+                client.stop()
             }
         }
     }

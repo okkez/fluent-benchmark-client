@@ -1,7 +1,7 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.SendChannel
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicLong
 
@@ -17,7 +17,7 @@ class PeriodicalReporter(private val statistics: SendChannel<Statistics.Recorder
     private var previous: Long = 0
 
     fun run() = runBlocking {
-        job = launch {
+        job = CoroutineScope(coroutineContext + SupervisorJob()).launch {
             while (isActive) {
                 val response = CompletableDeferred<Statistics>()
                 statistics.send(Statistics.Recorder.Set(eventCounter.get()))

@@ -16,11 +16,11 @@ import java.io.Serializable
 class TestAppender : AbstractAppender {
     constructor(name: String?,
                 filter: Filter?,
-                layout: Layout<out Serializable>?) : super(name, filter, layout)
+                layout: Layout<out Serializable>?) : super(name, filter, layout, false, arrayOf())
     constructor(name: String?,
                 filter: Filter?,
                 layout: Layout<out Serializable>?,
-                ignoreExceptions: Boolean) : super(name, filter, layout, ignoreExceptions)
+                ignoreExceptions: Boolean) : super(name, filter, layout, ignoreExceptions, arrayOf())
 
     companion object {
         var events = mutableListOf<LogEvent>()

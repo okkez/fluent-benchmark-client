@@ -1,15 +1,13 @@
 package org.fluentd.benchmark
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.msgpack.core.MessagePack
 
 object BenchmarkConfigSpec: Spek({
-    given("a benchmark config") {
+    describe("a benchmark config") {
         val config = BenchmarkConfig.create {
             tag = "test.tag"
             timestampType = BenchmarkClient.TimestampType.EventTime
@@ -23,12 +21,12 @@ object BenchmarkConfigSpec: Spek({
             mode = BenchmarkClient.Mode.FLOOD
             reportInterval = 1000
         }
-        on("values") {
+        context("values") {
             it("tag equals to test.tag") {
                 assertEquals("test.tag", config.tag)
             }
         }
-        on("record") {
+        context("record") {
             it("equals to {'key': 'value' }") {
                 val unpacker = MessagePack.newDefaultUnpacker(config.record())
                 val header = unpacker.unpackMapHeader()
@@ -39,7 +37,7 @@ object BenchmarkConfigSpec: Spek({
                 assertEquals("value", value)
             }
         }
-        on("parser") {
+        context("parser") {
             it("is instance of LTSVParser") {
                 assertTrue(config.parser() is LTSVParser)
             }

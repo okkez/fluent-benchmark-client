@@ -8,7 +8,7 @@ class TimeTypeConverter: CommandLine.ITypeConverter<Long> {
             return 0
         }
         val pattern = Regex("""\A(\d+)([smh])""")
-        val m = pattern.matchEntire(value!!)
+        val m = pattern.matchEntire(value)
         if (m != null) {
             val digit = m.groupValues[1].toLong()
             val unit = when (m.groupValues[2]) {

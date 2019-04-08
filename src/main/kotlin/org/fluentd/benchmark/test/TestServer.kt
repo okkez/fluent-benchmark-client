@@ -2,13 +2,12 @@ package org.fluentd.benchmark.test
 
 import influent.forward.ForwardCallback
 import influent.forward.ForwardServer
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.coroutines.experimental.withTimeout
+import kotlinx.coroutines.*
 import java.net.ServerSocket
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.coroutineContext
 
 class TestServer(port: Int = 24224) {
 
@@ -29,14 +28,17 @@ class TestServer(port: Int = 24224) {
     private val counter = AtomicLong(0)
     private var isRunning = false
 
-    fun run(expected: Long? = null, timeout: Long = 10L, body: () -> Unit) {
+    fun run(expected: Long? = null, timeout: Long = 10L, body: () -> Unit) = runBlocking {
+        var serverJob: Job? = null
         try {
             start()
-            body()
+            serverJob = GlobalScope.launch { body() }
             if (expected != null) {
                 waitFor(expected, timeout)
             }
         } finally {
+            serverJob!!.cancel()
+            serverJob.join()
             shutdown()
         }
     }
@@ -58,12 +60,12 @@ class TestServer(port: Int = 24224) {
     }
 
     fun waitFor(expected: Long, timeout: Long = 10L) = runBlocking {
-        withTimeout(timeout, TimeUnit.SECONDS) {
+        withTimeout(TimeUnit.SECONDS.toMillis(timeout)) {
             while (isActive) {
                 if (expected == counter.get()) {
                     return@withTimeout
                 }
-                delay(1, TimeUnit.MILLISECONDS)
+                delay(1)
             }
         }
     }

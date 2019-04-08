@@ -1,15 +1,13 @@
 package org.fluentd.benchmark
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.given
-import org.jetbrains.spek.api.dsl.it
-import org.jetbrains.spek.api.dsl.on
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import java.util.concurrent.TimeUnit
 import org.junit.jupiter.api.Assertions.assertEquals
 
 object StatisticsSpec: Spek({
-    given("statistics") {
-        on("start and finish") {
+    describe("statistics") {
+        context("start and finish") {
             val statistics = Statistics()
             statistics.set(1000)
             TimeUnit.MILLISECONDS.sleep(200)
