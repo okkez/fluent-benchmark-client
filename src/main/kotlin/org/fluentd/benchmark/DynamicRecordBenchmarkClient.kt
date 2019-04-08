@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.coroutineContext
 
 class DynamicRecordBenchmarkClient(
         override val host: String,
@@ -41,8 +42,9 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsInInterval(interval: Long): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsInInterval(interval: Long): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             if (config.nEvents < 1000) {
                 while (isActive) {
                     records.forEach {
@@ -85,8 +87,9 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsPerSec(): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsPerSec(): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             var start = System.currentTimeMillis()
             var interval = TimeUnit.SECONDS.toMicros(1) / config.nEventsPerSec!!
             var needInterval = true
@@ -116,8 +119,9 @@ class DynamicRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsInFlood(): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsInFlood(): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             try {
                 while (isActive) {
                     records.forEach {

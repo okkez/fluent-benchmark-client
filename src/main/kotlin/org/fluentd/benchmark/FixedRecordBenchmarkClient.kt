@@ -1,15 +1,12 @@
 package org.fluentd.benchmark
 
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import org.komamitsu.fluency.Fluency
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.coroutines.coroutineContext
 
 class FixedRecordBenchmarkClient(
         override val host: String,
@@ -27,8 +24,9 @@ class FixedRecordBenchmarkClient(
     /**
      * @param interval The intervals in microseconds
      */
-    override suspend fun emitEventsInInterval(interval: Long): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsInInterval(interval: Long): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             when {
                 config.nEvents < 1000 -> {
                     for (i in 1L..config.nEvents) {
@@ -69,8 +67,9 @@ class FixedRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsPerSec(): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsPerSec(): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             var start = System.currentTimeMillis()
             var interval = TimeUnit.SECONDS.toMicros(1) / config.nEventsPerSec!!
             var needInterval = true
@@ -98,8 +97,9 @@ class FixedRecordBenchmarkClient(
         }
     }
 
-    override suspend fun emitEventsInFlood(): Job = coroutineScope {
-        launch {
+    override suspend fun emitEventsInFlood(): Job {
+        val context = CoroutineScope(coroutineContext + SupervisorJob())
+        return context.launch {
             try {
                 while (isActive) {
                     emitEvent(record)
